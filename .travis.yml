@@ -10,8 +10,10 @@ branches:
 
 install:
   # Install Terraform.
-  - curl https://nixos.org/nix/install | sh && . ~/.nix-profile/etc/profile.d/nix.sh
-  - nix-env -i terraform
+  - curl -fSL "https://releases.hashicorp.com/terraform/0.11.7/terraform_0.11.7_linux_amd64.zip" -o terraform.zip
+  - sudo unzip terraform.zip -d /opt/terraform
+  - sudo ln -s /opt/terraform/terraform /usr/bin/terraform
+  - rm -f terraform.zip
 
 script:
   # Check the syntax of terraform
