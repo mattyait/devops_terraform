@@ -1,3 +1,11 @@
+variable "aws_profile" {
+  default = "default"
+}
+
+variable "vpc_name" {
+  default = "Demoterraform"
+}
+
 variable "aws_region" {
   default = "us-east-1"
 }
@@ -19,8 +27,4 @@ variable "public_subnet" {
     "subnetA" = "10.0.3.0/24"
     "subnetB" = "10.0.4.0/24"
   }
-}
-
-variable "public_route_cidr" {
-  default = "10.0.0.0/16"
 }
