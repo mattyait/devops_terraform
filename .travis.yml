@@ -1,0 +1,18 @@
+---
+language: bash
+
+env:
+  - TERRAFORM_VERSION=latest
+
+branches:
+  only:
+    - master
+
+install:
+  # Install Terraform.
+  - curl https://nixos.org/nix/install | sh && . ~/.nix-profile/etc/profile.d/nix.sh
+  - nix-env -i terraform
+
+script:
+  # Check the syntax of terraform
+  - terraform validate VPC"
