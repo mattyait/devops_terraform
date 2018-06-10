@@ -17,4 +17,5 @@ install:
 
 script:
   # Check the syntax of terraform
+  - terraform init VPC
   - terraform validate VPC
