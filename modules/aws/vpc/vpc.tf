@@ -7,43 +7,6 @@ resource "aws_vpc" "Demoterraform" {
         Name = "${var.vpc_name}"
     }
 }
-# =============Creating Private Subnet1a==============
-resource "aws_subnet" "PrivateSubnetA" {
-    vpc_id = "${aws_vpc.Demoterraform.id}"
-    cidr_block = "${lookup(var.private_subnet, "subnetA")}"
-    tags {
-        Name = "PrivateSubnet1a"
-    }
-}
-
-# =============Creating Private Subnet1b==============
-resource "aws_subnet" "PrivateSubnetB" {
-    vpc_id = "${aws_vpc.Demoterraform.id}"
-    cidr_block = "${lookup(var.private_subnet, "subnetB")}"
-    tags {
-        Name = "PrivateSubnet1b"
-    }
-}
-
-# =============Creating Public Subnet1a==============
-resource "aws_subnet" "PublicSubnetA" {
-    vpc_id = "${aws_vpc.Demoterraform.id}"
-    cidr_block = "${lookup(var.public_subnet, "subnetA")}"
-
-    tags {
-        Name = "PublicSubnet1a"
-    }
-}
-
-# =============Creating Public Subnet1b==============
-resource "aws_subnet" "PublicSubnetB" {
-    vpc_id = "${aws_vpc.Demoterraform.id}"
-    cidr_block = "${lookup(var.public_subnet, "subnetB")}"
-
-    tags {
-        Name = "PublicSubnet1b"
-    }
-}
 
 # =============Creating Internet Gateway==============
 resource "aws_internet_gateway" "DemoInternetGateway" {
@@ -52,6 +15,29 @@ resource "aws_internet_gateway" "DemoInternetGateway" {
     tags {
         Name = "DemoInternetGateway"
     }
+}
+
+# =============Create Private Subnet for each availability_zone==============
+resource "aws_subnet" "private" {
+  vpc_id = "${aws_vpc.Demoterraform.id}"
+  cidr_block = "${element(split(",", var.private_subnet), count.index)}"
+  availability_zone = "${element(split(",", lookup(var.availability_zone, var.aws_region)), count.index)}"
+  count = "${length(compact(split(",", var.private_subnet)))}"
+  tags {
+    Name = "private-${element(split(",", lookup(var.availability_zone, var.aws_region)), count.index)}"
+  }
+}
+
+
+# =============Create Public Subnet for each availability_zone==============
+resource "aws_subnet" "public" {
+  vpc_id = "${aws_vpc.Demoterraform.id}"
+  cidr_block = "${element(split(",", var.public_subnet), count.index)}"
+  availability_zone = "${element(split(",", lookup(var.availability_zone, var.aws_region)), count.index)}"
+  count = "${length(compact(split(",", var.public_subnet)))}"
+  tags {
+    Name = "public-${element(split(",", lookup(var.availability_zone, var.aws_region)), count.index)}"
+  }
 }
 
 # =============Creating Public Route Table==============
