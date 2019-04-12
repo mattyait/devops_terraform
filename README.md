@@ -11,8 +11,8 @@ Run the docker container
 
 Enter the Container and use it as a Dev Environment
 
-    docker exec -it a8 bash 
-    
+    docker exec -it <container_id> bash
+
 Setup the AWS Credentials
 
     aws configure
@@ -23,5 +23,12 @@ Setup the AWS Credentials
 
 After Setup the Credentials, Initialize the terraform and execute the plan
 
-    terraform init VPC
-    terraform plan VPC
+        terraform init
+        terraform plan
+To Create the Infrastructure apply the terraform changes
+
+        terraform apply
+
+## Modules
+- **vpc** : This is a module to create VPC, Private and all public subnets
+- **asg** : This module is to create launch configuration and auto scaling group for Ec2
