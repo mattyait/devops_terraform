@@ -23,8 +23,10 @@ Setup the AWS Credentials
 
 After Setup the Credentials, Initialize the terraform and execute the plan
 
+        terraform fmt
         terraform init
         terraform plan
+        
 To Create the Infrastructure apply the terraform changes
 
         terraform apply
@@ -32,3 +34,14 @@ To Create the Infrastructure apply the terraform changes
 ## Modules
 - **vpc** : This is a module to create VPC, Private and all public subnets
 - **asg** : This module is to create launch configuration and auto scaling group for Ec2
+
+## Multiple Environment
+Create the multiple workspace in case of handling the multiple env.
+
+    terraform workspace new dev
+
+To list and Select the specification workspace
+
+    terraform workspace list
+    terraform workspace select dev
+    

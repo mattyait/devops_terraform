@@ -18,8 +18,9 @@ variable "public_subnet" {}
 
 variable "availability_zone" {
   type = "map"
+
   default = {
-  "us-east-1" = "us-east-1a,us-east-1b,us-east-1c,us-east-1e"
-  "us-west-1" = "us-west-1a,us-west-1b"
+    "us-east-1" = "us-east-1a,us-east-1b,us-east-1c,us-east-1e"
+    "us-west-1" = "us-west-1a,us-west-1b"
   }
 }

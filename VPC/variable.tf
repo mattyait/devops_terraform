@@ -16,6 +16,7 @@ variable "vpc_cidr_block" {
 
 variable "private_subnet" {
   type = "map"
+
   default = {
     "subnetA" = "10.0.1.0/24"
     "subnetB" = "10.0.2.0/24"

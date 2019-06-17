@@ -12,22 +12,26 @@ variable "aws_amis" {
   }
 }
 
+variable "availability_zones" {}
+
 variable "security_groups" {}
+
+variable "asg_max" {}
+
+variable "asg_desired" {}
+
+variable "launch_config_name" {}
+
+variable "instance_type" {}
 
 variable "asg_name" {}
 
 variable "keyname" {}
 
-variable "asg_max" {}
-
 variable "asg_min" {}
-
-variable "asg_desired" {}
 
 variable "health_check_grace_period" {}
 
-variable "health_check_type"  {}
+variable "health_check_type" {}
 
 variable "elb_name" {}
-
-variable "launch_config_name" {}
