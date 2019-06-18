@@ -44,4 +44,9 @@ To list and Select the specification workspace
 
     terraform workspace list
     terraform workspace select dev
-    
+
+Cd into the specific environment and run the terraform
+
+    terraform init
+    terraform plan -var-file=./dev_env.tfvar
+

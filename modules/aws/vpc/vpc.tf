@@ -3,9 +3,9 @@ resource "aws_vpc" "Demoterraform" {
   cidr_block           = "${var.vpc_cidr_block}"
   enable_dns_support   = "true"
   enable_dns_hostnames = "true"
-
-  tags {
-    Name = "${var.vpc_name}-${terraform.workspace}"
+  
+  tags = {
+    Name = "${var.vpc_name}-${var.env}"
   }
 }
 
@@ -13,8 +13,8 @@ resource "aws_vpc" "Demoterraform" {
 resource "aws_internet_gateway" "DemoInternetGateway" {
   vpc_id = "${aws_vpc.Demoterraform.id}"
 
-  tags {
-    Name = "DemoInternetGateway-${terraform.workspace}"
+  tags = {
+    Name = "DemoInternetGateway-${var.env}"
   }
 }
 
@@ -25,8 +25,8 @@ resource "aws_subnet" "private" {
   availability_zone = "${element(split(",", lookup(var.availability_zone, var.aws_region)), count.index)}"
   count             = "${length(compact(split(",", var.private_subnet)))}"
 
-  tags {
-    Name = "private-${element(split(",", lookup(var.availability_zone, var.aws_region)), count.index)}-${terraform.workspace}"
+  tags = {
+    Name = "private-${element(split(",", lookup(var.availability_zone, var.aws_region)), count.index)}-${var.env}"
   }
 }
 
@@ -37,8 +37,8 @@ resource "aws_subnet" "public" {
   availability_zone = "${element(split(",", lookup(var.availability_zone, var.aws_region)), count.index)}"
   count             = "${length(compact(split(",", var.public_subnet)))}"
 
-  tags {
-    Name = "public-${element(split(",", lookup(var.availability_zone, var.aws_region)), count.index)}-${terraform.workspace}"
+  tags = {
+    Name = "public-${element(split(",", lookup(var.availability_zone, var.aws_region)), count.index)}-${var.env}"
   }
 }
 
@@ -46,12 +46,12 @@ resource "aws_subnet" "public" {
 resource "aws_route_table" "PublicRoute" {
   vpc_id = "${aws_vpc.Demoterraform.id}"
 
-  route {
+  route  {
     cidr_block = "0.0.0.0/0"
     gateway_id = "${aws_internet_gateway.DemoInternetGateway.id}"
   }
 
-  tags {
-    Name = "Public RouteTable-${terraform.workspace}"
+  tags = {
+    Name = "Public RouteTable-${var.env}"
   }
 }
