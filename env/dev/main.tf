@@ -1,10 +1,3 @@
-variable aws_profile  { default = "default" }
-variable aws_region { default = "ap-southeast-2" }
-variable vpc_name   { default = "" }
-variable vpc_cidr_block { default = "" }
-variable private_subnet { default = "" }
-variable public_subnet  { default = "" }
-
 provider "aws" {
   region                  = "${var.aws_region}"
   shared_credentials_file = "/root/.aws/credentials"
@@ -16,6 +9,37 @@ module "vpc" {
   source         = "../../modules/aws/vpc"
   vpc_name       = "${var.vpc_name}"
   vpc_cidr_block = "${var.vpc_cidr_block}"
-  private_subnet = "${var.private_subnet}"
-  public_subnet  = "${var.public_subnet}"
+  environment    = "${var.environment}"
+}
+
+module "public_subnet_1a" {
+  source            = "../../modules/aws/subnet"
+  vpc_id            = "${module.vpc.vpc_id_out}"
+  cidr_block        = "${var.public_subnet_1a_cidr_block}"
+  availability_zone = "ap-southeast-1a"
+  environment       = "${var.environment}"
+}
+
+module "public_subnet_1b" {
+  source            = "../../modules/aws/subnet"
+  vpc_id            = "${module.vpc.vpc_id_out}"
+  cidr_block        = "${var.public_subnet_1b_cidr_block}"
+  availability_zone = "ap-southeast-1b"
+  environment       = "${var.environment}"
+}
+
+module "private_subnet_1a" {
+  source            = "../../modules/aws/subnet"
+  vpc_id            = "${module.vpc.vpc_id_out}"
+  cidr_block        = "${var.private_subnet_1a_cidr_block}"
+  availability_zone = "ap-southeast-1a"
+  environment       = "${var.environment}"
+}
+
+module "private_subnet_1b" {
+  source            = "../../modules/aws/subnet"
+  vpc_id            = "${module.vpc.vpc_id_out}"
+  cidr_block        = "${var.private_subnet_1b_cidr_block}"
+  availability_zone = "ap-southeast-1b"
+  environment       = "${var.environment}"
 }

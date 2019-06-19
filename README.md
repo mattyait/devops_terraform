@@ -47,6 +47,12 @@ To list and Select the specification workspace
 
 Cd into the specific environment and run the terraform
 
+    cd devops_terraform/env/dev
     terraform init
     terraform plan -var-file=./dev_env.tfvar
+    terraform apply -var-file=./dev_env.tfvar
+    
+# To destory the created infratstructure
+
+    terraform destroy -var-file=./dev_env.tfvar
 
