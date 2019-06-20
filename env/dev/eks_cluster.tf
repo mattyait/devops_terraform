@@ -9,7 +9,7 @@ module "eks_cluster" {
 
 
   write_kubeconfig      = true
-  config_output_path    = "/.kube/"
+  config_output_path    = "~/.kube/"
   manage_aws_auth       = true
   write_aws_auth_config = true
 
