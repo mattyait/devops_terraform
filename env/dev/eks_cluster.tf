@@ -9,18 +9,28 @@ module "eks_cluster" {
 
 
   write_kubeconfig      = true
-  config_output_path    = "/.kube/"
+  config_output_path    = "~/.kube/"
   manage_aws_auth       = true
   write_aws_auth_config = true
 
   worker_groups = [
     {
-      instance_type = "m1.medium"
-      asg_max_size  = 5
+      name                 = "eks_workers"
+      instance_type        = "${var.instance_type}"
+      asg_min_size         = "${var.asg_min_size}"
+      asg_desired_capacity = "${var.asg_desired_capacity}"
+      asg_max_size         = "${var.asg_max_size}"
+      root_volume_size     = "${var.root_volume_size}"
+      root_volume_type     = "${var.root_volume_type}"
+      ami_id               = "${var.ami_id}"
+      ebs_optimized        = false
+      key_name             = "${var.key_name}"
+      enable_monitoring    = false
     }
   ]
 
   tags = {
     Cluster = "k8s"
+    Name = "${var.environment}_eks_workers"
   }
 }
