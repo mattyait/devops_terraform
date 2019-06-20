@@ -49,10 +49,10 @@ Cd into the specific environment and run the terraform
 
     cd devops_terraform/env/dev
     terraform init
-    terraform plan -var-file=./dev_env.tfvar
-    terraform apply -var-file=./dev_env.tfvar
+    terraform plan -var-file=./env.tfvar
+    terraform apply -var-file=./env.tfvar
     
 # To destory the created infratstructure
 
-    terraform destroy -var-file=./dev_env.tfvar
+    terraform destroy -var-file=./env.tfvar
 
