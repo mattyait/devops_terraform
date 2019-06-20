@@ -17,6 +17,5 @@ install:
 
 script:
   # Check the syntax of terraform
-  - cd env/dev/
-  - terraform init
-  - terraform validate
+  - cd env/dev/ && terraform init
+  - cd env/dev/ && terraform validate
