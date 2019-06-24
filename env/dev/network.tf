@@ -6,6 +6,14 @@ module "vpc" {
   environment    = "${var.environment}"
 }
 
+#=======Creating internet Gateway ==========
+module "internet_gateway"{
+  source      = "../../modules/aws/internet_gateway"
+  vpc_id      = "${module.vpc.vpc_id_out}"
+  environment = "${var.environment}"
+  type        = "igw"
+}
+  
 #======= Creating Public Subnet in both 1a and 1b Availability_zone========================
 module "public_subnet_1a" {
   source            = "../../modules/aws/subnet"
@@ -74,4 +82,14 @@ module "private_route_1b" {
   cidr_block     = "0.0.0.0/0"
   gateway_id     = "${module.nat_gateway_1b.nat_gateway_id}"
   type           = "private_1b"
+}
+
+#=========Public route table and attach to internet gateway_id
+module "public_route" {
+  source         = "../../modules/aws/route_table"
+  environment    = "${var.environment}"
+  vpc_id         = "${module.vpc.vpc_id_out}"
+  cidr_block     = "0.0.0.0/0"
+  gateway_id    = "${module.internet_gateway.internet_gateway_id_out}"
+  type           = "public"
 }
