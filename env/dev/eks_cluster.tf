@@ -16,6 +16,7 @@ module "eks_cluster" {
   worker_groups = [
     {
       name                 = "eks_workers"
+      public_ip            = true     #Temparory 
       instance_type        = "${var.instance_type}"
       asg_min_size         = "${var.asg_min_size}"
       asg_desired_capacity = "${var.asg_desired_capacity}"
