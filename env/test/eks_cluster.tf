@@ -9,7 +9,7 @@ module "eks_cluster" {
 
 
   write_kubeconfig      = true
-  config_output_path    = "~/.kube/"
+  config_output_path    = "/.kube/"
   manage_aws_auth       = true
   write_aws_auth_config = true
 
@@ -38,7 +38,7 @@ module "eks_cluster" {
 
 #resource "null_resource" "kubeconfig_environment_variable" {
 #  provisioner "local-exec" {
-#    command = "export KUBECONFIG=$KUBECONFIG:\~/.kube/kubeconfig_eks_cluster"
+#    command = "export KUBECONFIG=$KUBECONFIG:/.kube/kubeconfig_eks_cluster"
 #    interpreter = ["bash"]
 #  }
 #}
