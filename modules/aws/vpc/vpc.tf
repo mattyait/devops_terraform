@@ -8,12 +8,3 @@ resource "aws_vpc" "vpc" {
     Name = "${var.vpc_name}-${var.environment}"
   }
 }
-
-# =============Creating Internet Gateway==============
-resource "aws_internet_gateway" "internetgateway" {
-  vpc_id = "${aws_vpc.vpc.id}"
-
-  tags = {
-    Name = "igw-${var.environment}"
-  }
-}
