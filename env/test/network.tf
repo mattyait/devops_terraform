@@ -41,6 +41,16 @@ module "public_subnet_1b" {
   type              = "public_1b"
 }
 
+# associate routing table with subnet
+resource "aws_route_table_association" "public_subnet_route_association_1a" {
+  subnet_id      = "${module.public_subnet_1a.subnet_id_out}"
+  route_table_id = "${module.public_route.route_table_id_out}"
+}
+
+resource "aws_route_table_association" "public_subnet_route_association_1b" {
+  subnet_id      = "${module.public_subnet_1b.subnet_id_out}"
+  route_table_id = "${module.public_route.route_table_id_out}"
+}
 #======= Creating Private Subnet in 1a Availability zone========================
 #======= Creating Nat Gateway and attaching to private route for 1a zone=========
 module "nat_gateway_1a" {
@@ -67,6 +77,11 @@ module "private_route_1a" {
   type           = "private_1a"
 }
 
+# associate routing table with subnet
+resource "aws_route_table_association" "private_subnet_route_association_1a" {
+  subnet_id      = "${module.private_subnet_1a.subnet_id_out}"
+  route_table_id = "${module.private_route_1a.route_table_id_out}"
+}
 #======= Creating Private Subnet in 1b Availability zone========================
 #======= Creating Nat Gateway and attaching to priavte route for 1b zone=========
 module "nat_gateway_1b" {
@@ -92,4 +107,10 @@ module "private_route_1b" {
   cidr_block     = "0.0.0.0/0"
   gateway_id     = "${module.nat_gateway_1b.nat_gateway_id}"
   type           = "private_1b"
+}
+
+# associate routing table with subnet
+resource "aws_route_table_association" "private_subnet_route_association_1b" {
+  subnet_id      = "${module.private_subnet_1b.subnet_id_out}"
+  route_table_id = "${module.private_route_1b.route_table_id_out}"
 }

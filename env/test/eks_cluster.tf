@@ -35,3 +35,10 @@ module "eks_cluster" {
     Name = "${var.environment}_eks_workers"
   }
 }
+
+#resource "null_resource" "kubeconfig_environment_variable" {
+#  provisioner "local-exec" {
+#    command = "export KUBECONFIG=$KUBECONFIG:\~/.kube/kubeconfig_eks_cluster"
+#    interpreter = ["bash"]
+#  }
+#}
