@@ -19,13 +19,12 @@ script:
   # Check the syntax of terraform
   #- cd env/dev/ && terraform init
   #- cd env/dev/ && terraform validate
-  - terraform validate
   - |
-  for example in $(find env/dev -maxdepth 1 -mindepth 1 -type d); do
-  cd $example
-  terraform init
-  terraform fmt -check=true
-  terraform validate
-  done
+    for example in $(find env/dev -maxdepth 1 -mindepth 1 -type d); do
+    cd $example
+    terraform init
+    terraform fmt -check=true
+    terraform validate
+    done
   - terraform -v
  
