@@ -5,14 +5,14 @@ provider "aws" {
   version                 = "2.3.0"
 }
 
-resource "aws_s3_bucket" "bucket" {
-  bucket = "terraformbackend_matty.com"
-}
+#resource "aws_s3_bucket" "bucket" {
+#  bucket = "terraformbackend_matty.com"
+#}
 
-terraform {
-  backend "s3" {
-    bucket = "terraformbackend_matty.com"
-    key    = "terraform"
-    region = "${var.aws_region}"
-  }
-}
+#terraform {
+#  backend "s3" {
+#    bucket = "terraformbackend_matty.com"
+#    key    = "terraform"
+#    region = "${var.aws_region}"
+#  }
+#}
