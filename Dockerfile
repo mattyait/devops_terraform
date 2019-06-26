@@ -1,6 +1,6 @@
 FROM golang:alpine
 
-ENV TERRAFORM_VERSION=0.11.11
+ENV TERRAFORM_VERSION=0.12.3
 
 RUN apk add --update git bash openssh && \
     apk add vim curl

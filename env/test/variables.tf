@@ -8,6 +8,9 @@ variable public_subnet_1b_cidr_block {}
 variable private_subnet_1a_cidr_block {}
 variable private_subnet_1b_cidr_block {}
 
+#=========ECS Variables==========
+variable ecs_cluster_name{ default = "app-demo" }
+variable ecs_security_group_name {}
 #==========EKS Variables========
 variable instance_type {}
 variable asg_min_size {}
