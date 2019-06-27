@@ -394,11 +394,11 @@ resource "aws_ecs_service" "main" {
       type = placement_constraints.value.type
     }
   }
-  network_configuration {
-    subnets          = "${var.ecs_subnet_ids}"
-    security_groups  = ["${aws_security_group.ecs_sg.id}"]
-    assign_public_ip = false
-  }
+  #network_configuration {
+  #  subnets          = "${var.ecs_subnet_ids}"
+  #  security_groups  = "${aws_security_group.ecs_sg.id}"
+  #  assign_public_ip = false
+  #}
 
   load_balancer {
     target_group_arn = "${var.lb_target_group}"

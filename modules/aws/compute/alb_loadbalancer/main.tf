@@ -10,7 +10,6 @@ module "alb_target_group" {
   description           = "ecs_alb_tg"
 }
 
-
 resource "aws_s3_bucket" "lb_logs" {
   bucket = "${var.aws_access_logs_bucket}"
   acl    = "private"
@@ -64,8 +63,20 @@ resource "aws_lb" "load-balancer" {
   }
 }
 
+# create a rule for ALB
+resource "aws_lb_listener" "front_end" {
+  load_balancer_arn = "${aws_lb.load-balancer.arn}"
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = "${module.alb_target_group.alb_target_group_arn_out}"
+  }
+}
+
 # ==========Attaching target group to ALB==========
-resource "aws_lb_target_group_attachment" "test" {
+resource "aws_alb_target_group_attachment" "test" {
   target_group_arn = "${module.alb_target_group.alb_target_group_arn_out}"
   target_id        = "${module.alb_target_group.alb_target_group_id_out}"
   port             = 80
