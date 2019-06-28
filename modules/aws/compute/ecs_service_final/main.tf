@@ -365,7 +365,6 @@ locals {
 }
 
 resource "aws_ecs_service" "main" {
-  count = "${var.associate_alb || var.associate_nlb ? 1 : 0}"
 
   name    = "${var.name}"
   cluster = "${var.ecs_cluster_arn}"
@@ -415,8 +414,7 @@ resource "aws_ecs_service" "main" {
 # the load_balancer argument due to this Terraform bug:
 # https://github.com/hashicorp/terraform/issues/16856
 resource "aws_ecs_service" "main_no_lb" {
-  count = "${var.associate_alb || var.associate_nlb ? 0 : 1}"
-
+  
   name    = "${var.name}"
   cluster = "${var.ecs_cluster_arn}"
 
@@ -445,13 +443,74 @@ resource "aws_ecs_service" "main_no_lb" {
     }
   }
 
-  network_configuration {
-    subnets          = "${var.ecs_subnet_ids}"
-    security_groups  = ["${aws_security_group.ecs_sg.id}"]
-    assign_public_ip = false
-  }
+  #network_configuration {
+  #  subnets          = "${var.ecs_subnet_ids}"
+  #  security_groups  = ["${aws_security_group.ecs_sg.id}"]
+  #  assign_public_ip = false
+  #}
 
   lifecycle {
     ignore_changes = ["task_definition"]
   }
+}
+
+
+
+#
+# Application AutoScaling resources
+#
+resource "aws_appautoscaling_target" "main" {
+  service_namespace  = "ecs"
+  resource_id        = "service/${var.cluster_name}/${aws_ecs_service.main.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  min_capacity       = "${var.min_count}"
+  max_capacity       = "${var.max_count}"
+
+  depends_on = [
+    "aws_ecs_service.main",
+  ]
+}
+
+resource "aws_appautoscaling_policy" "up" {
+  name               = "appScalingPolicy${var.environment}${var.name}ScaleUp"
+  service_namespace  = "ecs"
+  resource_id        = "service/${var.cluster_name}/${aws_ecs_service.main.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+
+  step_scaling_policy_configuration {
+    adjustment_type         = "ChangeInCapacity"
+    cooldown                = "${var.scale_up_cooldown_seconds}"
+    metric_aggregation_type = "Average"
+
+    step_adjustment {
+      metric_interval_lower_bound = 0
+      scaling_adjustment          = 1
+    }
+  }
+
+  depends_on = [
+    "aws_appautoscaling_target.main",
+  ]
+}
+
+resource "aws_appautoscaling_policy" "down" {
+  name               = "appScalingPolicy${var.environment}${var.name}ScaleDown"
+  service_namespace  = "ecs"
+  resource_id        = "service/${var.cluster_name}/${aws_ecs_service.main.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+
+  step_scaling_policy_configuration {
+    adjustment_type         = "ChangeInCapacity"
+    cooldown                = "${var.scale_down_cooldown_seconds}"
+    metric_aggregation_type = "Average"
+
+    step_adjustment {
+      metric_interval_upper_bound = 0
+      scaling_adjustment          = -1
+    }
+  }
+
+  depends_on = [
+    "aws_appautoscaling_target.main",
+  ]
 }

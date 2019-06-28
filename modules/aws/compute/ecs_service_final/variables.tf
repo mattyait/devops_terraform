@@ -148,3 +148,34 @@ variable "ecs_task_def_network_mode" {
   default     = "bridge"
   type        = "string"
 }
+
+variable "cluster_name" {
+  description = "CLuster Name attach to autoscaling group"
+  type        = "string"
+}
+
+variable "desired_count" {
+  description = "Desired count for Ecs autoscaling group"
+  type        = "string"
+  default     = "2"
+}
+variable  "min_count" {
+  description = "Minimum count for Ecs autoscaling group"
+  type        = "string"
+  default     = "2"
+}
+variable "max_count"  {
+  description = "Maximum count for Ecs autoscaling group"
+  type        = "string"
+  default     = "5"
+}
+variable  "scale_up_cooldown_seconds" {
+  description = "Scale up cooldown period in seconds"
+  type        = "string"
+  default     = "300"
+}
+variable  "scale_down_cooldown_seconds" {
+  description = "Scale down cooldown period in seconds"
+  type        = "string"
+  default     = "300"
+}
