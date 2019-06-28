@@ -75,9 +75,9 @@ resource "aws_lb_listener" "front_end" {
   }
 }
 
-# ==========Attaching target group to ALB==========
-resource "aws_alb_target_group_attachment" "test" {
-  target_group_arn = "${module.alb_target_group.alb_target_group_arn_out}"
-  target_id        = "${module.alb_target_group.alb_target_group_id_out}"
-  port             = 80
-}
+## ==========Attaching target group to ALB==========
+#resource "aws_alb_target_group_attachment" "test" {
+#  target_group_arn = "${module.alb_target_group.alb_target_group_arn_out}"
+#  target_id        = "${module.alb_target_group.alb_target_group_id_out}"
+#  port             = 80
+#}
