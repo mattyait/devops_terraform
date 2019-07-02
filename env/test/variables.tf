@@ -11,6 +11,19 @@ variable private_subnet_1b_cidr_block {}
 #=========ECS Variables==========
 variable ecs_cluster_name{ default = "app-demo" }
 variable ecs_security_group_name {}
+variable ecs_alb_target_group_name {}
+variable ecs_asg_desired_count { default = "1" }
+variable ecs_asg_min_count { default = "1" }
+variable ecs_asg_max_count { default = "2" }
+variable ecs_ec2_desired_capacity { default = "1" }
+variable ecs_ec2_min_size { default = "1" }
+variable ecs_ec2_max_size { default = "2" }
+variable ecs_scale_up_cooldown_seconds { default = "300" }
+variable ecs_scale_down_cooldown_seconds { default = "300" }
+variable ecs_ec2_ami {}
+variable ecs_ec2_instance_type { default  = "t2.micro" }
+
+
 #==========EKS Variables========
 variable instance_type {}
 variable asg_min_size {}

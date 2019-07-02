@@ -31,6 +31,7 @@ module "public_subnet_1a" {
   cidr_block        = "${var.public_subnet_1a_cidr_block}"
   environment       = "${var.environment}"
   type              = "public_1a"
+  availability_zone = "ap-southeast-2a"
 }
 
 module "public_subnet_1b" {
@@ -39,6 +40,7 @@ module "public_subnet_1b" {
   cidr_block        = "${var.public_subnet_1b_cidr_block}"
   environment       = "${var.environment}"
   type              = "public_1b"
+  availability_zone = "ap-southeast-2b"
 }
 
 # associate routing table with subnet
@@ -66,6 +68,7 @@ module "private_subnet_1a" {
   cidr_block        = "${var.private_subnet_1a_cidr_block}"
   environment       = "${var.environment}"
   type              = "private_1a"
+  availability_zone = "ap-southeast-2a"
 }
 
 module "private_route_1a" {
@@ -98,6 +101,7 @@ module "private_subnet_1b" {
   cidr_block        = "${var.private_subnet_1b_cidr_block}"
   environment       = "${var.environment}"
   type              = "private_1b"
+  availability_zone = "ap-southeast-2b"
 }
 
 module "private_route_1b" {
