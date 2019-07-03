@@ -25,13 +25,13 @@ locals {
   {
     "name": "${local.target_container_name}",
     "image": "${var.container_image}",
-    "cpu": 128,
-    "memory": 128,
+    "cpu": 256,
+    "memory": 256,
     "essential": true,
     "portMappings": [
       {
         "containerPort": ${var.container_port},
-        "hostPort": ${var.container_port},
+        "hostPort": ${var.host_port},
         "protocol": "tcp"
       }
     ],

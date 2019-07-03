@@ -95,6 +95,12 @@ variable "container_port" {
   type        = "string"
 }
 
+variable "host_port" {
+  description = "The port on which the container will receive traffic."
+  default     = 0
+  type        = "string"
+}
+
 variable "container_health_check_port" {
   description = "An additional port on which the container can receive a health check.  Zero means the container port can only receive a health check on the port set by the container_port variable."
   default     = 0
