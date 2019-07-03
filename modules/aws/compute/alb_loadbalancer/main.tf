@@ -43,6 +43,7 @@ POLICY
 
 # ==========Create ALB ==========
 resource "aws_lb" "load-balancer" {
+  count = "${var.is_access_logs_enabled == "true" ? 1 : 0}"
   name               = "${var.lb_name}"
   internal           = "${var.is_internal_lb}"
   load_balancer_type = "${var.load_balancer_type}"
@@ -63,9 +64,38 @@ resource "aws_lb" "load-balancer" {
   }
 }
 
+resource "aws_lb" "load-balancer-noaccess-logs" {
+  count = "${var.is_access_logs_enabled == "false" ? 1 : 0}"
+  name               = "${var.lb_name}"
+  internal           = "${var.is_internal_lb}"
+  load_balancer_type = "${var.load_balancer_type}"
+  security_groups    = "${var.security_groups}"
+  subnets            = "${var.subnets}"
+
+  enable_cross_zone_load_balancing = "${var.enable_cross_zone_load_balancing}"
+  enable_deletion_protection       = "${var.deletion_protection}"
+  
+  tags = {
+    Name  = "${var.environment}_${var.type}"
+  }
+}
+
 # create a rule for ALB
-resource "aws_lb_listener" "front_end" {
-  load_balancer_arn = "${aws_lb.load-balancer.arn}"
+resource "aws_lb_listener" "load-balancer" {
+  count = "${var.is_access_logs_enabled == "true" ? 1 : 0}"
+  load_balancer_arn = "${aws_lb.load-balancer[count.index].arn}"
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = "${module.alb_target_group.alb_target_group_arn_out}"
+  }
+}
+
+resource "aws_lb_listener" "load-balancer-noaccess-logs" {
+  count = "${var.is_access_logs_enabled == "false" ? 1 : 0}"
+  load_balancer_arn = "${aws_lb.load-balancer-noaccess-logs[count.index].arn}"
   port              = "80"
   protocol          = "HTTP"
 

@@ -37,3 +37,4 @@ variable alb_target_group_name {}
 variable vpc_id{}
 variable target_group_port { default = "80" }
 variable target_group_protocol { default = "HTTP" }
+variable is_access_logs_enabled { default = "false" }
