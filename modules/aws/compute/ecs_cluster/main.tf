@@ -71,27 +71,27 @@ resource "aws_iam_instance_profile" "ecs_instance_profile" {
 # Security Group
 #
 
-resource "aws_security_group" "main" {
-  name        = "asg-${local.cluster_name}"
-  description = "${local.cluster_name} ASG security group"
-  vpc_id      = "${var.vpc_id}"
+#resource "aws_security_group" "main" {
+#  name        = "asg-${local.cluster_name}"
+#  description = "${local.cluster_name} ASG security group"
+#  vpc_id      = "${var.vpc_id}"
+#
+#  tags = {
+#    Environment = "${var.environment}"
+#    Automation  = "Terraform"
+#  }
+#}
 
-  tags = {
-    Environment = "${var.environment}"
-    Automation  = "Terraform"
-  }
-}
-
-resource "aws_security_group_rule" "main" {
-  description       = "All outbound"
-  security_group_id = "${aws_security_group.main.id}"
-
-  type        = "egress"
-  from_port   = 0
-  to_port     = 0
-  protocol    = "-1"
-  cidr_blocks = ["0.0.0.0/0"]
-}
+#resource "aws_security_group_rule" "main" {
+#  description       = "All outbound"
+#  security_group_id = "${aws_security_group.main.id}"
+#
+#  type        = "egress"
+#  from_port   = 0
+#  to_port     = 0
+#  protocol    = "-1"
+#  cidr_blocks = ["0.0.0.0/0"]
+#}
 
 #
 # EC2
@@ -105,7 +105,7 @@ resource "aws_launch_configuration" "main" {
   instance_type               = "${var.instance_type}"
   image_id                    = "${var.image_id}"
   associate_public_ip_address = false
-  security_groups             = ["${aws_security_group.main.id}"]
+  security_groups             = "${var.security_group_ids}"
   key_name                    = "${var.key_name}"
 
   root_block_device {

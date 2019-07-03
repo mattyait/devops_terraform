@@ -28,6 +28,11 @@ variable "subnet_ids" {
   type        = "list"
 }
 
+variable "security_group_ids" {
+  description = "A list of security group need to attach to ec2 as a part of ecs."
+  type        = "list"
+}
+
 variable "desired_capacity" {
   description = "Desired instance count."
   type        = "string"

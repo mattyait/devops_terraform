@@ -405,45 +405,6 @@ resource "aws_ecs_service" "main" {
   }
 }
 
-## XXX: We have to duplicate this resource with a count instead of parameterizing
-## the load_balancer argument due to this Terraform bug:
-## https://github.com/hashicorp/terraform/issues/16856
-#resource "aws_ecs_service" "main_no_lb" {
-#  
-#  name    = "${var.name}"
-#  cluster = "${var.ecs_cluster_arn}"
-#
-#  launch_type = "${local.ecs_service_launch_type}"
-#
-#  # Use latest active revision
-#  task_definition = "${aws_ecs_task_definition.main.family}:${max(
-#    "${aws_ecs_task_definition.main.revision}",
-#    "${data.aws_ecs_task_definition.main.revision}")}"
-#
-#  desired_count                      = "${var.tasks_desired_count}"
-#  deployment_minimum_healthy_percent = "${var.tasks_minimum_healthy_percent}"
-#  deployment_maximum_percent         = "${var.tasks_maximum_percent}"
-#
-#  dynamic "ordered_placement_strategy" {
-#    for_each = local.ecs_service_ordered_placement_strategy[local.ecs_service_launch_type]
-#    content {
-#      type = ordered_placement_strategy.value.type
-#      field = ordered_placement_strategy.value.field
-#    }
-#  }
-#  dynamic "placement_constraints" {
-#    for_each = local.ecs_service_placement_constraints[local.ecs_service_launch_type]
-#    content {
-#      type = placement_constraints.value.type
-#    }
-#  }
-#
-#  lifecycle {
-#    ignore_changes = ["task_definition"]
-#  }
-#}
-
-
 # Application AutoScaling resources
 #
 resource "aws_appautoscaling_target" "main" {
