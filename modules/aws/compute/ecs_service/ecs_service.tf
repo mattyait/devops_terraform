@@ -357,7 +357,7 @@ locals {
 
   ecs_service_placement_constraints = {
     EC2 = [{
-      type = "distinctInstance"
+      type = "memberOf"
     }]
 
     FARGATE = []

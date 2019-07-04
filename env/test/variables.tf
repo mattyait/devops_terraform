@@ -22,7 +22,7 @@ variable ecs_scale_up_cooldown_seconds { default = "300" }
 variable ecs_scale_down_cooldown_seconds { default = "300" }
 variable ecs_ec2_ami {}
 variable ecs_ec2_instance_type { default  = "t2.micro" }
-
+variable ecs_alb_security_group_name {}
 
 #==========EKS Variables========
 variable instance_type {}
