@@ -84,8 +84,8 @@ resource "aws_lb" "load-balancer-noaccess-logs" {
 resource "aws_lb_listener" "load-balancer" {
   count = "${var.is_access_logs_enabled == "true" ? 1 : 0}"
   load_balancer_arn = "${aws_lb.load-balancer[count.index].arn}"
-  port              = "80"
-  protocol          = "HTTP"
+  port              = "${var.alb_listener_port}"
+  protocol          = "${var.alb_listener_protocol}"
 
   default_action {
     type             = "forward"

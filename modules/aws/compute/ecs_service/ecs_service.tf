@@ -356,9 +356,10 @@ locals {
   }
 
   ecs_service_placement_constraints = {
-    EC2 = [{
-      type = "memberOf"
-    }]
+    #EC2 = [{
+    #  type = "memberOf"
+    #}]
+    EC2 = []
 
     FARGATE = []
   }
