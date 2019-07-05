@@ -1,6 +1,9 @@
+#====Global Vairable for whole suite====
 variable environment {}
 variable aws_profile  { default = "default" }
 variable aws_region { default = "ap-southeast-2" }
+
+#====terraform VPC variables====
 variable vpc_name   { default = "" }
 variable vpc_cidr_block { default = "" }
 variable public_subnet_1a_cidr_block {}
@@ -23,6 +26,13 @@ variable ecs_scale_down_cooldown_seconds { default = "300" }
 variable ecs_ec2_ami {}
 variable ecs_ec2_instance_type { default  = "t2.micro" }
 variable ecs_alb_security_group_name {}
+variable ec2_root_volume_size {}
+variable ec2_ebs_volume_size {}
+variable ecs_name {}
+variable target_container_name {}
+variable container_image {}
+variable container_port {}
+variable host_port {}
 
 #==========EKS Variables========
 variable instance_type {}

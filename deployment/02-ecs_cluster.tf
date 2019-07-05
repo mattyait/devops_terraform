@@ -1,6 +1,6 @@
 #======= Creating Security Group needed to attach Ec2 instance as a part of cluster=========
 module "ecs_cluster_security_group" {
-  source              = "../../modules/aws/network/security_group"
+  source              = "../modules/aws/network/security_group"
   security_group_name = "${var.ecs_security_group_name}"
   vpc_id              = "${module.vpc.vpc_id_out}"
   environment         = "${var.environment}"
@@ -43,7 +43,7 @@ module "ecs_cluster_security_group" {
 #======= Creating ECS Cluster=========
 #It will create Autoscaling group and launch configuration also
 module "app_ecs_cluster" {
-  source            = "../../modules/aws/compute/ecs_cluster"    
+  source            = "../modules/aws/compute/ecs_cluster"    
   ecs_cluster_name  = "${var.ecs_cluster_name}"
   vpc_id              = "${module.vpc.vpc_id_out}"
   environment       = "${var.environment}"
@@ -54,7 +54,7 @@ module "app_ecs_cluster" {
   max_size         = "${var.ecs_ec2_max_size}"
   min_size         = "${var.ecs_ec2_min_size}"
   key_name         =  "${var.key_name}"
-  root_volume_size  = "20"
-  ebs_volume_size   = "50"
+  root_volume_size  = "${var.ec2_root_volume_size}"
+  ebs_volume_size   = "${var.ec2_ebs_volume_size}"
   security_group_ids = ["${module.ecs_cluster_security_group.security_group_id_out}"]
 }

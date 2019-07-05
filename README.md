@@ -31,7 +31,7 @@ To Create the Infrastructure apply the terraform changes
 
         terraform apply
 
-## Multiple Environment
+## Terraform way of handling Multiple Environment
 Create the multiple workspace in case of handling the multiple env.
 
     terraform workspace new dev
@@ -41,16 +41,18 @@ To list and Select the specification workspace
     terraform workspace list
     terraform workspace select dev
 
-Cd into the specific environment and run the terraform
+# Customize way of handling multiple environment
+
+Cd into the specific environment folder and run the terraform
 
     cd devops_terraform/env/dev
-    terraform init
-    terraform plan -var-file=./env.tfvar
-    terraform apply -var-file=./env.tfvar
+    terraform init -var-file=dev.variables.tfvar -backend-config=dev.backend.tfvars ../../deployment/
+    terraform plan -out=tfplan -var-file=dev.tfvars ../../deployment
+    terraform apply -var-file=dev.tfvars ../../deployment tfplan
     
 # To destory the created infratstructure
 
-    terraform destroy -var-file=./env.tfvar
+    terraform destroy -var-file=dev.tfvars ../../deployment
 
 ## Modules
 - **vpc** : This is a module to create VPC, Private and all public subnets
