@@ -49,6 +49,10 @@ Cd into the specific environment folder and run the terraform
     terraform init -var-file=dev.variables.tfvar -backend-config=dev.backend.tfvars ../../deployment/
     terraform plan -out=tfplan -var-file=dev.tfvars ../../deployment
     terraform apply -var-file=dev.tfvars ../../deployment tfplan
+
+Run specific module
+
+    terraform plan -var-file=dev.variables.tfvar -target=module.<module_name> ../../deployment/
     
 # To destory the created infratstructure
 
