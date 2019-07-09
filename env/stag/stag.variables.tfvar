@@ -16,6 +16,20 @@ ecs_alb_target_group_name = "ecs-alb-target-grp"
 ecs_ec2_ami = "ami-01711df8fe87a6217"
 ecs_ec2_instance_type = "t3.medium"
 
+ecs_cluster_name                =   "app-demo"
+ecs_security_group_name         =   "app-demo-sg"
+ecs_alb_security_group_name     =   "app-demo-sg"
+ecs_ec2_ami                     =   "ami-01711df8fe87a6217"
+ecs_ec2_instance_type           =   "t3.medium"
+ec2_root_volume_size            =   "50"
+ec2_ebs_volume_size             =   "50"
+ecs_name                        =   "app-demo"
+ecs_alb_target_group_name       =   "app-demo-tg"
+target_container_name           =   "app-demo"
+container_image                 =   "golang:1.12.5-alpine"
+container_port                  =   "80"
+host_port                       =   "0"
+
 #============EKS Variables========
 instance_type = "m1.medium"
 asg_min_size = 2
