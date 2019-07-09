@@ -1,14 +1,14 @@
-module "vpc_network" {
-  source                        = "../modules/aws/network/vpc_network"    
-  vpc_name                      = "${var.vpc_name}"
-  vpc_cidr_block                = "${var.vpc_cidr_block}"
-  environment                   = "${var.environment}"
-  public_subnet_1a_cidr_block   = "${var.public_subnet_1a_cidr_block}"
-  public_subnet_1b_cidr_block   = "${var.public_subnet_1b_cidr_block}"
-  private_subnet_1a_cidr_block  = "${var.private_subnet_1a_cidr_block}"
-  private_subnet_1b_cidr_block  = "${var.private_subnet_1b_cidr_block}"
-  
-}
+#module "vpc_network" {
+#  source                        = "../modules/aws/network/vpc_network"    
+#  vpc_name                      = "${var.vpc_name}"
+#  vpc_cidr_block                = "${var.vpc_cidr_block}"
+#  environment                   = "${var.environment}"
+#  public_subnet_1a_cidr_block   = "${var.public_subnet_1a_cidr_block}"
+#  public_subnet_1b_cidr_block   = "${var.public_subnet_1b_cidr_block}"
+#  private_subnet_1a_cidr_block  = "${var.private_subnet_1a_cidr_block}"
+#  private_subnet_1b_cidr_block  = "${var.private_subnet_1b_cidr_block}"
+#  
+#}
 
 module "eks_cluster" {
   source  = "terraform-aws-modules/eks/aws"
@@ -17,7 +17,7 @@ module "eks_cluster" {
   cluster_name = "eks_cluster"
 
   vpc_id = "${module.vpc.vpc_id_out}"
-  subnets = ["${module.private_subnet_1a.subnet_id_out}", "${module.private_subnet_1b.subnet_id_out}"]
+  subnets = ["${module.private_subnet_1a.subnet_id_out}", "${module.private_subnet_1b.subnet_id_out}", "${module.public_subnet_1a.subnet_id_out}", "${module.public_subnet_1b.subnet_id_out}"]
 
 
   write_kubeconfig      = true
@@ -40,6 +40,7 @@ module "eks_cluster" {
       ebs_optimized        = false
       key_name             = "${var.key_name}"
       enable_monitoring    = false
+      subnets              = ["${module.private_subnet_1a.subnet_id_out}", "${module.private_subnet_1b.subnet_id_out}"]
     }
   ]
 
