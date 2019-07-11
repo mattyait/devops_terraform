@@ -14,7 +14,7 @@ module "eks_cluster" {
   source  = "terraform-aws-modules/eks/aws"
   version = "5.0.0"
   cluster_version = "1.12"
-  cluster_name = "eks_cluster"
+  cluster_name  = "${var.eks_cluster_name}"
 
   vpc_id = "${module.vpc.vpc_id_out}"
   subnets = ["${module.private_subnet_1a.subnet_id_out}", "${module.private_subnet_1b.subnet_id_out}", "${module.public_subnet_1a.subnet_id_out}", "${module.public_subnet_1b.subnet_id_out}"]
@@ -47,4 +47,28 @@ module "eks_cluster" {
   tags = {
     Cluster = "k8s"
   }
-} 
+}
+
+resource "null_resource" "tag-vpc" {
+  provisioner "local-exec" {
+    command = "aws ec2 create-tags --resources ${module.vpc.vpc_id_out} --tags Key=kubernetes.io/cluster/${var.eks_cluster_name},Value=shared"
+  }
+}
+
+
+#====Configuring the kubectl and registering the nodes with EKS cluster===
+#resource "null_resource" "configure-kubectl" {
+#  depends_on = [module.eks_cluster.cluster_id]
+#  provisioner "local-exec" {
+#    command = "export KUBECONFIG=$KUBECONFIG:/.kube/kubeconfig_${var.eks_cluster_name}"
+#    #interpreter = ["/bin/bash", "-c"]
+#  }
+#}
+
+#resource "null_resource" "register-nodes" {
+#  depends_on = [null_resource.configure-kubectl]
+#  provisioner "local-exec" {
+#    command = "kubectl apply -f /.kube/config-map-aws-auth_${var.eks_cluster_name}.yaml"
+#    interpreter = ["/bin/bash", "-c"]
+#  }
+#}
