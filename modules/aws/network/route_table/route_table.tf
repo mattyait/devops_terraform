@@ -5,8 +5,5 @@ resource "aws_route_table" "route_table" {
     cidr_block = "${var.cidr_block}"
     gateway_id = "${var.gateway_id}"
   }
-  
-  tags = {
-    Name  = "${var.environment}_${var.type}_route"
-  }
+  tags = merge(var.tags)
 }

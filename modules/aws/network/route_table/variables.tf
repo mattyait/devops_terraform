@@ -1,5 +1,8 @@
 variable vpc_id     {}
 variable cidr_block {}
 variable gateway_id {}
-variable environment {}
-variable type {}
+variable tags {
+  description = "A map of tags to add to all resources"
+  type        = map(string)
+  default     = {}
+}

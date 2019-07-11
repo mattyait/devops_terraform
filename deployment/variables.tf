@@ -35,6 +35,7 @@ variable container_port {}
 variable host_port {}
 
 #==========EKS Variables========
+variable eks_cluster_name {}
 variable instance_type {}
 variable asg_min_size {}
 variable asg_desired_capacity {}
