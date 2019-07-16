@@ -28,7 +28,6 @@ module "eks_cluster" {
   worker_groups = [
     {
       instance_type        = "m1.medium"
-      asg_max_size         = 5
       name                 = "eks_workers"
       instance_type        = "${var.instance_type}"
       asg_min_size         = "${var.asg_min_size}"

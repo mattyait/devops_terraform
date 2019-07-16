@@ -1,4 +1,4 @@
 #==========Backend Variables==========
 region  =   "ap-southeast-2"
-bucket  =   "terraformbackend-state.com"
+bucket  =   "terraform-state-demo.com"
 key     =   "state.tfstate"

@@ -2,7 +2,7 @@
 language: bash
 
 env:
-  - TERRAFORM_VERSION=latest
+  - TERRAFORM_VERSION=0.12.3
 
 branches:
   only:
@@ -10,7 +10,7 @@ branches:
 
 install:
   # Install Terraform.
-  - curl -fSL "https://releases.hashicorp.com/terraform/0.11.7/terraform_0.11.7_linux_amd64.zip" -o terraform.zip
+  - curl -fSL "https://releases.hashicorp.com/terraform/0.12.3/terraform_0.12.3_linux_amd64.zip" -o terraform.zip
   - sudo unzip terraform.zip -d /opt/terraform
   - sudo ln -s /opt/terraform/terraform /usr/bin/terraform
   - rm -f terraform.zip
@@ -20,11 +20,12 @@ script:
   #- cd env/dev/ && terraform init
   #- cd env/dev/ && terraform validate
   - |
-    for example in $(find env/dev -maxdepth 1 -mindepth 1 -type d); do
-    cd $example
-    terraform init
-    terraform fmt -check=true
-    terraform validate
+    dir=$(pwd)
+    for folderpath in $(find env/ -maxdepth 1 -mindepth 1 -type d); do
+     foldername=$(echo $folderpath | cut -d '/' -f2)
+     cd $dir/$folderpath && terraform init -var-file=$foldername.variables.tfvar -backend-config=$foldername.backend.tfvar ../../deployment
+     cd $dir/$folderpath && terraform fmt -check=true ../../deployment
+     cd $dir/$folderpath && terraform validate -var-file=$foldername.variables.tfvar ../../deployment
     done
   - terraform -v
  
