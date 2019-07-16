@@ -11,12 +11,12 @@
 #}
 
 module "eks_cluster" {
-  source  = "terraform-aws-modules/eks/aws"
-  version = "5.0.0"
+  source          = "terraform-aws-modules/eks/aws"
+  version         = "5.0.0"
   cluster_version = "1.12"
-  cluster_name  = "${var.eks_cluster_name}"
+  cluster_name    = "${var.eks_cluster_name}"
 
-  vpc_id = "${module.vpc.vpc_id_out}"
+  vpc_id  = "${module.vpc.vpc_id_out}"
   subnets = ["${module.private_subnet_1a.subnet_id_out}", "${module.private_subnet_1b.subnet_id_out}", "${module.public_subnet_1a.subnet_id_out}", "${module.public_subnet_1b.subnet_id_out}"]
 
 
@@ -27,8 +27,8 @@ module "eks_cluster" {
 
   worker_groups = [
     {
-      instance_type = "m1.medium"
-      asg_max_size  = 5
+      instance_type        = "m1.medium"
+      asg_max_size         = 5
       name                 = "eks_workers"
       instance_type        = "${var.instance_type}"
       asg_min_size         = "${var.asg_min_size}"
@@ -48,13 +48,6 @@ module "eks_cluster" {
     Cluster = "k8s"
   }
 }
-
-resource "null_resource" "tag-vpc" {
-  provisioner "local-exec" {
-    command = "aws ec2 create-tags --resources ${module.vpc.vpc_id_out} --tags Key=kubernetes.io/cluster/${var.eks_cluster_name},Value=shared"
-  }
-}
-
 
 #====Configuring the kubectl and registering the nodes with EKS cluster===
 #resource "null_resource" "configure-kubectl" {

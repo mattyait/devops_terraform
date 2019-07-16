@@ -1,10 +1,10 @@
 #====Global Vairable for whole suite====
 variable environment {}
-variable aws_profile  { default = "default" }
+variable aws_profile { default = "default" }
 variable aws_region { default = "ap-southeast-2" }
 
 #====terraform VPC variables====
-variable vpc_name   { default = "" }
+variable vpc_name { default = "" }
 variable vpc_cidr_block { default = "" }
 variable public_subnet_1a_cidr_block {}
 variable public_subnet_1b_cidr_block {}
@@ -12,7 +12,7 @@ variable private_subnet_1a_cidr_block {}
 variable private_subnet_1b_cidr_block {}
 
 #=========ECS Variables==========
-variable ecs_cluster_name{ default = "app-demo" }
+variable ecs_cluster_name { default = "app-demo" }
 variable ecs_security_group_name {}
 variable ecs_alb_target_group_name {}
 variable ecs_asg_desired_count { default = "1" }
@@ -24,7 +24,7 @@ variable ecs_ec2_max_size { default = "2" }
 variable ecs_scale_up_cooldown_seconds { default = "300" }
 variable ecs_scale_down_cooldown_seconds { default = "300" }
 variable ecs_ec2_ami {}
-variable ecs_ec2_instance_type { default  = "t2.micro" }
+variable ecs_ec2_instance_type { default = "t2.micro" }
 variable ecs_alb_security_group_name {}
 variable ec2_root_volume_size {}
 variable ec2_ebs_volume_size {}
