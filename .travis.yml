@@ -10,7 +10,7 @@ branches:
 
 install:
   # Install Terraform.
-  - curl -fSL "https://releases.hashicorp.com/terraform/$TERRAFORM_VERSION/terraform_$TERRAFORM_VERSION_linux_amd64.zip" -o terraform.zip
+  - curl -fSL https://releases.hashicorp.com/terraform/$TERRAFORM_VERSION/terraform_$TERRAFORM_VERSION_linux_amd64.zip -o terraform.zip
   - sudo unzip terraform.zip -d /opt/terraform
   - sudo ln -s /opt/terraform/terraform /usr/bin/terraform
   - rm -f terraform.zip
