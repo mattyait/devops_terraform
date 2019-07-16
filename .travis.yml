@@ -20,11 +20,12 @@ script:
   #- cd env/dev/ && terraform init
   #- cd env/dev/ && terraform validate
   - |
-    for example in $(find env/dev -maxdepth 1 -mindepth 1 -type d); do
-    cd $example
-    terraform init
-    terraform fmt -check=true
-    terraform validate
+    dir=$(pwd)
+    for folderpath in $(find env/ -maxdepth 1 -mindepth 1 -type d); do
+     foldername=$(echo $folderpath | cut -d '/' -f2)
+     cd $dir/$folderpath && terraform init -var-file=$foldername.variables.tfvar -backend-config=$foldername.backend.tfvar ../../deployment
+     cd $dir/$folderpath && terraform fmt -check=true ../../deployment
+     cd $dir/$folderpath && terraform validate -var-file=$foldername.variables.tfvar ../../deployment
     done
   - terraform -v
  
