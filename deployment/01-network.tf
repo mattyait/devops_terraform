@@ -2,35 +2,36 @@
 module "vpc" {
   source         = "../modules/aws/network/vpc"
   vpc_cidr_block = "${var.vpc_cidr_block}"
-  name = "${var.vpc_name}"
+  name           = "${var.vpc_name}"
   tags = {
-    Name = "${var.vpc_name}-${var.environment}"
-    Environment = "${var.environment}"
+    Name                                            = "${var.vpc_name}-${var.environment}"
+    Environment                                     = "${var.environment}"
+    "kubernetes.io/cluster/${var.eks_cluster_name}" = "shared"
   }
 }
 
 #=======Creating internet Gateway and attach it to public route table ==========
-module "internet_gateway"{
-  source      = "../modules/aws/network/internet_gateway"
-  vpc_id      = "${module.vpc.vpc_id_out}"
+module "internet_gateway" {
+  source = "../modules/aws/network/internet_gateway"
+  vpc_id = "${module.vpc.vpc_id_out}"
   tags = {
-    Name = "${var.environment}_int_gateway"
+    Name        = "${var.environment}_int_gateway"
     Environment = "${var.environment}"
   }
 }
 
 module "public_route" {
-  source         = "../modules/aws/network/route_table"
-  vpc_id         = "${module.vpc.vpc_id_out}"
-  cidr_block     = "0.0.0.0/0"
-  gateway_id    = "${module.internet_gateway.internet_gateway_id_out}"
+  source     = "../modules/aws/network/route_table"
+  vpc_id     = "${module.vpc.vpc_id_out}"
+  cidr_block = "0.0.0.0/0"
+  gateway_id = "${module.internet_gateway.internet_gateway_id_out}"
   tags = {
-    Name = "${var.environment}_public"
+    Name        = "${var.environment}_public"
     Environment = "${var.environment}"
   }
 }
 
-  
+
 #======= Creating Public Subnet in both 1a and 1b Availability_zone========================
 module "public_subnet_1a" {
   source            = "../modules/aws/network/subnet"
@@ -38,8 +39,10 @@ module "public_subnet_1a" {
   cidr_block        = "${var.public_subnet_1a_cidr_block}"
   availability_zone = "ap-southeast-2a"
   tags = {
-    Name = "${var.environment}_public_1a"
-    Environment = "${var.environment}"
+    Name                                            = "${var.environment}_public_1a"
+    Environment                                     = "${var.environment}"
+    "kubernetes.io/cluster/${var.eks_cluster_name}" = "shared"
+    "kubernetes.io/role/elb"                        = 1
   }
 }
 
@@ -48,9 +51,11 @@ module "public_subnet_1b" {
   vpc_id            = "${module.vpc.vpc_id_out}"
   cidr_block        = "${var.public_subnet_1b_cidr_block}"
   availability_zone = "ap-southeast-2b"
-    tags = {
-    Name = "${var.environment}_public_1b"
-    Environment = "${var.environment}"
+  tags = {
+    Name                                            = "${var.environment}_public_1b"
+    Environment                                     = "${var.environment}"
+    "kubernetes.io/cluster/${var.eks_cluster_name}" = "shared"
+    "kubernetes.io/role/elb"                        = 1
   }
 }
 
@@ -70,7 +75,7 @@ module "nat_gateway_1a" {
   source    = "../modules/aws/network/nat_gateway"
   subnet_id = "${module.public_subnet_1a.subnet_id_out}"
   tags = {
-    Name = "${var.environment}_public_1a"
+    Name        = "${var.environment}_public_1a"
     Environment = "${var.environment}"
   }
 }
@@ -81,18 +86,20 @@ module "private_subnet_1a" {
   cidr_block        = "${var.private_subnet_1a_cidr_block}"
   availability_zone = "ap-southeast-2a"
   tags = {
-    Name = "${var.environment}_private_1a"
-    Environment = "${var.environment}"
+    Name                                            = "${var.environment}_private_1a"
+    Environment                                     = "${var.environment}"
+    "kubernetes.io/cluster/${var.eks_cluster_name}" = "shared"
+    "kubernetes.io/role/internal-elb"               = 1
   }
 }
 
 module "private_route_1a" {
-  source         = "../modules/aws/network/route_table"
-  vpc_id         = "${module.vpc.vpc_id_out}"
-  cidr_block     = "0.0.0.0/0"
-  gateway_id     = "${module.nat_gateway_1a.nat_gateway_id}"
+  source     = "../modules/aws/network/route_table"
+  vpc_id     = "${module.vpc.vpc_id_out}"
+  cidr_block = "0.0.0.0/0"
+  gateway_id = "${module.nat_gateway_1a.nat_gateway_id}"
   tags = {
-    Name = "${var.environment}_private_1a"
+    Name        = "${var.environment}_private_1a"
     Environment = "${var.environment}"
   }
 }
@@ -108,7 +115,7 @@ module "nat_gateway_1b" {
   source    = "../modules/aws/network/nat_gateway"
   subnet_id = "${module.public_subnet_1b.subnet_id_out}"
   tags = {
-    Name = "${var.environment}_public_1b"
+    Name        = "${var.environment}_public_1b"
     Environment = "${var.environment}"
   }
 }
@@ -120,18 +127,20 @@ module "private_subnet_1b" {
   cidr_block        = "${var.private_subnet_1b_cidr_block}"
   availability_zone = "ap-southeast-2b"
   tags = {
-    Name = "${var.environment}_private_1b"
-    Environment = "${var.environment}"
+    Name                                            = "${var.environment}_private_1b"
+    Environment                                     = "${var.environment}"
+    "kubernetes.io/cluster/${var.eks_cluster_name}" = "shared"
+    "kubernetes.io/role/internal-elb"               = 1
   }
 }
 
 module "private_route_1b" {
-  source         = "../modules/aws/network/route_table"
-  vpc_id         = "${module.vpc.vpc_id_out}"
-  cidr_block     = "0.0.0.0/0"
-  gateway_id     = "${module.nat_gateway_1b.nat_gateway_id}"
+  source     = "../modules/aws/network/route_table"
+  vpc_id     = "${module.vpc.vpc_id_out}"
+  cidr_block = "0.0.0.0/0"
+  gateway_id = "${module.nat_gateway_1b.nat_gateway_id}"
   tags = {
-    Name = "${var.environment}_private_1b"
+    Name        = "${var.environment}_private_1b"
     Environment = "${var.environment}"
   }
 }
