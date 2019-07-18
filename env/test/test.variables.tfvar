@@ -27,11 +27,19 @@ container_port                  =   "8080"
 host_port                       =   "0"
 
 #============EKS Variables========
-instance_type = "m1.medium"
-asg_min_size = 2
-asg_desired_capacity = 2
-asg_max_size = 3
-root_volume_size = 50
-root_volume_type = "gp2"
-ami_id = "ami-01bfe815f644becc0"
+instance_type                   = "m1.medium"
+asg_min_size                    = 2
+asg_desired_capacity            = 2
+asg_max_size                    = 3
+root_volume_size                = 50
+root_volume_type                = "gp2"
+ami_id                          = "ami-01bfe815f644becc0"
 
+#============RDS Variables========
+rds_name                        = "dbname"
+db_engine                       = "mysql"
+db_engine_version               = "5.7.19"
+db_instance_type                = "db.t2.medium"
+db_allocated_storage            = "5"
+db_username                     = "user"
+db_password                     = "keepyourpasswordsecure"

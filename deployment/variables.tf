@@ -45,3 +45,11 @@ variable root_volume_type {}
 variable ami_id {}
 variable key_name {}
 
+#==========RDS Variables========
+variable rds_name {} 
+variable db_engine {}
+variable db_engine_version {}
+variable db_instance_type {}
+variable db_allocated_storage {}
+variable db_username {}
+variable db_password {}
