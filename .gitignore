@@ -3,5 +3,4 @@
 *.tfstate.backup
 .terraform*
 env/dry_run/
-templates/eks_deployment/
-templates/eks_services/
+templates/*
