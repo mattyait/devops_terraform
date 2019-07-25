@@ -2,3 +2,4 @@
 region  =   "ap-southeast-2"
 bucket  =   "terraform-state-demo.com"
 key     =   "stag/state.tfstate"
+dynamo_db_lock   = "stag-terraform-state-lock-dynamo"
