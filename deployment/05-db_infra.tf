@@ -1,5 +1,5 @@
 module "db" {
-  source  = "../modules/aws/database/db_main"
+  source     = "../modules/aws/database/db_main"
   identifier = "${var.rds_name}"
 
   engine            = "${var.db_engine}"
@@ -26,10 +26,10 @@ module "db" {
 
   # DB subnet group
   subnet_ids = ["${module.private_subnet_1a.subnet_id_out}", "${module.private_subnet_1b.subnet_id_out}"]
-  
+
   # DB parameter group
   family = "mysql5.7"
-  
+
   # DB option group
   major_engine_version = "5.7"
 
@@ -38,11 +38,11 @@ module "db" {
 
   parameters = [
     {
-      name = "character_set_client"
+      name  = "character_set_client"
       value = "utf8"
     },
     {
-      name = "character_set_server"
+      name  = "character_set_server"
       value = "utf8"
     }
   ]

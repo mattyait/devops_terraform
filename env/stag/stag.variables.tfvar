@@ -1,7 +1,11 @@
+#==========Provider Variables=====
+aws_profile                     =   "default"
+aws_region                      =   "ap-southeast-2"
+dynamo_db_lock                  =    "stag-terraform-state-lock-dynamo"  #It has to be same as backend.fvar dynamo db lock
+
+#==========VPC Variables=====
 environment                     = "dev"
-aws_profile                     = "default"
 vpc_name                        = "terraform"
-aws_region                      = "ap-southeast-2"
 vpc_cidr_block                  = "10.0.0.0/16"
 private_subnet_1a_cidr_block    = "10.0.1.0/24"
 private_subnet_1b_cidr_block    = "10.0.2.0/24"
