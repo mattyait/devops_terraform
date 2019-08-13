@@ -7,11 +7,11 @@ Build the docker image
 
 Run the docker container
 
-    docker run -i -d -v ~/environment/devops_terraform/:/mnt/workspace terraform/terraform:latest
+    docker run -i -d -v $(pwd):/mnt/workspace terraform/terraform:latest
 
 Enter the Container and use it as a Dev Environment
 
-    docker exec -it <container_id> bash
+    docker exec -it $(docker ps | grep terraform:latest | awk '{print $1}') bash
 
 Setup the AWS Credentials
 
@@ -21,12 +21,35 @@ Setup the AWS Credentials
     Default region name [None]:
     Default output format [Noµne]:
 
+# Customize way of handling multiple environment for this project structure
+
+Cd into the specific environment folder and run the terraform
+
+    cd devops_terraform/env/test
+    terraform init -var-file=test.variables.tfvar -backend-config=test.backend.tfvars ../../deployment/
+    terraform plan -var-file=test.variables.tfvar ../../deployment
+    terraform apply -var-file=test.variables.tfvar ../../deployment
+
+Run specific module
+
+    terraform plan -var-file=test.variables.tfvar -target=module.<module_name> ../../deployment/
+
+## Disable/Skip specific part of infra while terraform apply
+To disbale or avoid the execution of any specific terraform file, currenlty need to pass the toggle off/on variable in `test.variables.tfvar` to control the specific part of infra.
+For example, below are used to skip the ecs_cluster,ecs_service and codebuild part of infra.
+
+    ecs_cluster_create  = "false"
+    ecs_service_create  = "false"
+    codebuild_create    = "false"
+
+
+## General way using terraform
 After Setup the Credentials, Initialize the terraform and execute the plan
 
         terraform fmt
         terraform init
         terraform plan
-        
+
 To Create the Infrastructure apply the terraform changes
 
         terraform apply
@@ -41,22 +64,11 @@ To list and Select the specification workspace
     terraform workspace list
     terraform workspace select dev
 
-# Customize way of handling multiple environment
 
-Cd into the specific environment folder and run the terraform
 
-    cd devops_terraform/env/dev
-    terraform init -var-file=dev.variables.tfvar -backend-config=dev.backend.tfvars ../../deployment/
-    terraform plan -out=tfplan -var-file=dev.tfvars ../../deployment
-    terraform apply -var-file=dev.tfvars ../../deployment tfplan
-
-Run specific module
-
-    terraform plan -var-file=dev.variables.tfvar -target=module.<module_name> ../../deployment/
-    
 # To destory the created infratstructure
 
-    terraform destroy -var-file=dev.tfvars ../../deployment
+    terraform destroy -var-file=test.variable.tfvars ../../deployment
 
 ## Modules
 - **vpc** : This is a module to create VPC, Private and all public subnets
@@ -96,7 +108,7 @@ Run specific module
             cidr_blocks = ["0.0.0.0/0"]
         }
       ]
-      
+
       egress_cidr_blocks    =  [
         {
             from_port   = 0
@@ -107,7 +119,7 @@ Run specific module
         }
       ]
     }
-        
+
 # Alb load balancer
 
     module "ecs_alb_loadbalancer" {
@@ -121,7 +133,7 @@ Run specific module
       alb_target_group_name             = "test"
       environment                       = "${var.environment}"
       type                              = "ecs_alb"
-      
+
       #Target Group related parameters
       vpc_id                             =  "${module.vpc.vpc_id_out}"
       target_group_port                  = "80"
@@ -162,7 +174,7 @@ Run specific module
       associate_alb                 = true
       alb_security_group            = "${module.ecs_alb_security_group.security_group_id_out}"
       lb_target_group               = "${module.ecs_alb_loadbalancer.alb_target_group_id_out}"
-      
+
       #Autoscaling parameters
       cluster_name                   = "${module.app_ecs_cluster.ecs_cluster_name_out}"
       desired_count                  = "${var.ecs_asg_desired_count}"
