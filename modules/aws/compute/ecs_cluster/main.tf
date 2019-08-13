@@ -21,13 +21,15 @@ locals {
 #
 
 resource "aws_ecs_cluster" "main" {
-  name = "${local.cluster_name}"
+  count = "${var.enable == "true" ? 1 : 0}"
+  name  = "${local.cluster_name}"
 
   lifecycle {
     create_before_destroy = true
   }
+
   tags = {
-    Name    = "${var.environment}_${var.ecs_cluster_name}"
+    Name = "${var.environment}_${var.ecs_cluster_name}"
   }
 }
 
@@ -39,6 +41,8 @@ resource "aws_ecs_cluster" "main" {
 # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
 
 data "aws_iam_policy_document" "ecs_instance_assume_role_policy" {
+  count = "${var.enable == "true" ? 1 : 0}"
+
   statement {
     actions = ["sts:AssumeRole"]
 
@@ -50,21 +54,22 @@ data "aws_iam_policy_document" "ecs_instance_assume_role_policy" {
 }
 
 resource "aws_iam_role" "ecs_instance_role" {
+  count              = "${var.enable == "true" ? 1 : 0}"
   name               = "ecs-instance-role-${local.cluster_name}"
-  assume_role_policy = "${data.aws_iam_policy_document.ecs_instance_assume_role_policy.json}"
+  assume_role_policy = "${data.aws_iam_policy_document.ecs_instance_assume_role_policy[0].json}"
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_instance_role_policy" {
-  count = "${var.use_AmazonEC2ContainerServiceforEC2Role_policy ? 1 : 0}"
-
-  role       = "${aws_iam_role.ecs_instance_role.name}"
+  count      = "${var.use_AmazonEC2ContainerServiceforEC2Role_policy && var.enable == "true" ? 1 : 0}"
+  role       = "${aws_iam_role.ecs_instance_role[0].name}"
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
 }
 
 resource "aws_iam_instance_profile" "ecs_instance_profile" {
-  name = "ecsInstanceRole-${local.cluster_name}"
-  path = "/"
-  role = "${aws_iam_role.ecs_instance_role.name}"
+  count = "${var.enable == "true" ? 1 : 0}"
+  name  = "ecsInstanceRole-${local.cluster_name}"
+  path  = "/"
+  role  = "${aws_iam_role.ecs_instance_role[0].name}"
 }
 
 #
@@ -98,9 +103,10 @@ resource "aws_iam_instance_profile" "ecs_instance_profile" {
 #
 
 resource "aws_launch_configuration" "main" {
+  count       = "${var.enable == "true" ? 1 : 0}"
   name_prefix = "${format("ecs-%s-", local.cluster_name)}"
 
-  iam_instance_profile = "${aws_iam_instance_profile.ecs_instance_profile.name}"
+  iam_instance_profile = "${aws_iam_instance_profile.ecs_instance_profile[0].name}"
 
   instance_type               = "${var.instance_type}"
   image_id                    = "${var.image_id}"
@@ -123,7 +129,7 @@ resource "aws_launch_configuration" "main" {
   user_data = <<EOF
 #!/bin/bash
 # The cluster this agent should check into.
-echo 'ECS_CLUSTER=${aws_ecs_cluster.main.name}' >> /etc/ecs/ecs.config
+echo 'ECS_CLUSTER=${aws_ecs_cluster.main[0].name}' >> /etc/ecs/ecs.config
 # Disable privileged containers.
 echo 'ECS_DISABLE_PRIVILEGED=true' >> /etc/ecs/ecs.config
 EOF
@@ -134,9 +140,10 @@ EOF
 }
 
 resource "aws_autoscaling_group" "main" {
-  name = "ecs-${local.cluster_name}"
+  count = "${var.enable == "true" ? 1 : 0}"
+  name  = "ecs-${local.cluster_name}"
 
-  launch_configuration = "${aws_launch_configuration.main.id}"
+  launch_configuration = "${aws_launch_configuration.main[0].id}"
   termination_policies = ["OldestLaunchConfiguration", "Default"]
   vpc_zone_identifier  = "${var.subnet_ids}"
 

@@ -1,4 +1,5 @@
 resource "aws_route_table" "route_table" {
+  count  = "${var.enable == "true" ? 1 : 0}"
   vpc_id = "${var.vpc_id}"
   lifecycle {
         ignore_changes = ["route"]

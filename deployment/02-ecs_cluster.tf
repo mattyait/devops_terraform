@@ -1,10 +1,12 @@
 #======= Creating Security Group needed to attach Ec2 instance as a part of cluster=========
 module "ecs_cluster_security_group" {
+  enable              = "${var.ecs_cluster_create}"
   source              = "../modules/aws/network/security_group"
   security_group_name = "${var.ecs_security_group_name}"
   vpc_id              = "${module.vpc.vpc_id_out}"
   environment         = "${var.environment}"
   description         = "ecs_cluster_sg"
+
   ingress_cidr_blocks = [
     {
       from_port   = 22
@@ -26,7 +28,7 @@ module "ecs_cluster_security_group" {
       protocol    = "tcp"
       description = "Application port"
       cidr_blocks = ["0.0.0.0/0"]
-    }
+    },
   ]
 
   egress_cidr_blocks = [
@@ -36,13 +38,14 @@ module "ecs_cluster_security_group" {
       protocol    = "-1"
       description = "Allow outgoing traffic"
       cidr_blocks = ["0.0.0.0/0"]
-    }
+    },
   ]
 }
 
 #======= Creating ECS Cluster=========
 #It will create Autoscaling group and launch configuration also
 module "app_ecs_cluster" {
+  enable             = "${var.ecs_cluster_create}"
   source             = "../modules/aws/compute/ecs_cluster"
   ecs_cluster_name   = "${var.ecs_cluster_name}"
   vpc_id             = "${module.vpc.vpc_id_out}"

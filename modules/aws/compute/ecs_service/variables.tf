@@ -1,3 +1,7 @@
+variable "enable" {
+  default = "true"
+}
+
 variable "name" {
   description = "The service name."
   type        = "string"
@@ -165,22 +169,26 @@ variable "desired_count" {
   type        = "string"
   default     = "2"
 }
-variable  "min_count" {
+
+variable "min_count" {
   description = "Minimum count for Ecs autoscaling group"
   type        = "string"
   default     = "2"
 }
-variable "max_count"  {
+
+variable "max_count" {
   description = "Maximum count for Ecs autoscaling group"
   type        = "string"
   default     = "5"
 }
-variable  "scale_up_cooldown_seconds" {
+
+variable "scale_up_cooldown_seconds" {
   description = "Scale up cooldown period in seconds"
   type        = "string"
   default     = "300"
 }
-variable  "scale_down_cooldown_seconds" {
+
+variable "scale_down_cooldown_seconds" {
   description = "Scale down cooldown period in seconds"
   type        = "string"
   default     = "300"
