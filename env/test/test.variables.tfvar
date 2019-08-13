@@ -2,6 +2,12 @@
 aws_profile                     =   "default"
 aws_region                      =   "ap-southeast-2"
 dynamo_db_lock                  =    "test-terraform-state-lock-dynamo"  #It has to be same as backend.fvar dynamo db lock
+
+#==========Module toggle on/off variable (default is on for all within deployment) =============
+ecs_cluster_create              = "false"
+ecs_service_create              = "false"
+codebuild_create                = "false"
+
 #==========VPC Variables==========
 environment                     =   "devops"
 vpc_name                        =   "terraform"
@@ -29,14 +35,15 @@ container_port                  =   "8080"
 host_port                       =   "0"
 
 #============EKS Variables========
-instance_type                   = "m1.medium"
+eks_cluster_name                = "eks_cluster"
+instance_type                   = "t3.medium"
 asg_min_size                    = 2
 asg_desired_capacity            = 2
 asg_max_size                    = 3
 root_volume_size                = 50
 root_volume_type                = "gp2"
+eks_cluster_version             = "1.12"
 ami_id                          = "ami-01bfe815f644becc0"
-
 #============RDS Variables========
 rds_name                        = "dbname"
 db_engine                       = "mysql"
@@ -45,3 +52,8 @@ db_instance_type                = "db.t2.medium"
 db_allocated_storage            = "5"
 db_username                     = "user"
 db_password                     = "keepyourpasswordsecure"
+
+#=============Codebuild variables========
+codebuild_env_image             = "image_name"
+codebuild_service_role_arn      = "service_role"
+buildspec_path                  = "buildspec.yml"

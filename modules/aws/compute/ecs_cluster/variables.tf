@@ -1,3 +1,7 @@
+variable "enable" {
+  default = "true"
+}
+
 variable "ecs_cluster_name" {
   description = "The ECS cluster name this will launching instances for."
   type        = "string"
@@ -59,18 +63,18 @@ variable "use_AmazonEC2ContainerServiceforEC2Role_policy" {
 
 variable "key_name" {
   description = "KeyName use to connect to ec2 as a part of launch configuration"
-  type  = "string"
-  default = ""
+  type        = "string"
+  default     = ""
 }
 
 variable "root_volume_size" {
   description = "Volume size of root block"
-  type = "string"
-  default = "10"
+  type        = "string"
+  default     = "10"
 }
 
 variable "ebs_volume_size" {
   description = "EBS volume size"
-  type  = "string"
-  default = "10"
+  type        = "string"
+  default     = "10"
 }

@@ -1,10 +1,12 @@
 #======= Creating Security Group needed for ALB for ECS service=========
 module "ecs_alb_security_group" {
+  enable              = "${var.ecs_service_create}"
   source              = "../modules/aws/network/security_group"
   security_group_name = "${var.ecs_alb_security_group_name}"
   vpc_id              = "${module.vpc.vpc_id_out}"
   environment         = "${var.environment}"
   description         = "test-alb-sg"
+
   ingress_cidr_blocks = [
     {
       from_port   = 80
@@ -26,7 +28,7 @@ module "ecs_alb_security_group" {
       protocol    = "tcp"
       description = "Https open for all"
       cidr_blocks = ["0.0.0.0/0"]
-    }
+    },
   ]
 
   egress_cidr_blocks = [
@@ -36,11 +38,13 @@ module "ecs_alb_security_group" {
       protocol    = "-1"
       description = "Allow outgoing traffic"
       cidr_blocks = ["0.0.0.0/0"]
-    }
+    },
   ]
 }
+
 #===== This module will create target group as well as load balancer and attach=====
 module "ecs_alb_loadbalancer" {
+  enable                = "${var.ecs_service_create}"
   source                = "../modules/aws/compute/alb_loadbalancer"
   lb_name               = "${var.ecs_name}"
   is_internal_lb        = "false"
@@ -72,6 +76,7 @@ module "ecs_alb_loadbalancer" {
 
 #======= Creating ECS Service=========
 module "app_ecs_service" {
+  enable                        = "${var.ecs_service_create}"
   source                        = "../modules/aws/compute/ecs_service"
   name                          = "${var.ecs_name}"
   environment                   = "${var.environment}"

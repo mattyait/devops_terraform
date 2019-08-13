@@ -6,3 +6,6 @@ variable tags {
   type        = map
   default     = {}
 }
+variable enable {
+  default = "true"
+}

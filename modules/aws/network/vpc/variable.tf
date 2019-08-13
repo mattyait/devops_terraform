@@ -8,3 +8,6 @@ variable tags {
   default     = {}
 }
 variable vpc_cidr_block {}
+variable enable {
+  default = "true"
+}
