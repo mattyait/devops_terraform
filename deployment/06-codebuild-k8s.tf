@@ -10,7 +10,7 @@ module "codeBuild" {
   buildspec        = "${var.buildspec_path}"
   privileged_mode  = false
   source_provider  = "CODECOMMIT"
-  repository_url   = "https://git-codecommit.ap-southeast-2.amazonaws.com/v1/repos/Jetstar-ansible-deployment"
+  repository_url   = "https://git-codecommit.ap-southeast-2.amazonaws.com/v1/repos/<repo-name>"
 
   environment_variables = [{
     name  = "ENVIRONMENT"
