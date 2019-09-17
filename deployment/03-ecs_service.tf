@@ -52,27 +52,18 @@ module "ecs_alb_loadbalancer" {
   security_groups       = ["${module.ecs_alb_security_group.security_group_id_out}"]
   subnets               = ["${module.public_subnet_1a.subnet_id_out}", "${module.public_subnet_1b.subnet_id_out}"]
   deletion_protection   = "false"
-  alb_target_group_name = "${var.ecs_alb_target_group_name}"
   environment           = "${var.environment}"
   type                  = "ecs_alb"
   alb_listener_port     = "80"
   alb_listener_protocol = "HTTP"
 
   #Target Group related parameters
+  alb_target_group_name = "${var.ecs_alb_target_group_name}"
   vpc_id                = "${module.vpc.vpc_id_out}"
   target_group_port     = "80"
   target_group_protocol = "HTTP"
 }
 
-#data "template_file" "app_ecs_service" {
-#  template = "${file("task-definitions/container_def.json.tpl")}"
-#  vars = {
-#    name = "${var.target_container_name}"
-#    image = "${var.container_image}"
-#    contianer_port = "${var.container_port}"
-#    host_port = "${var.host_port}"
-#  }
-#}
 
 #======= Creating ECS Service=========
 module "app_ecs_service" {

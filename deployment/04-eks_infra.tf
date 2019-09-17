@@ -1,3 +1,10 @@
+module "eks_worker_key_pair" {
+  enable = "${var.eks_worker_key_pair}"
+  source = "../modules/aws/compute/key_pair"
+  name   = "${var.key_name}"
+  path   = "${path.root}/keys"
+}
+
 module "eks_cluster" {
   source          = "terraform-aws-modules/eks/aws"
   version         = "5.0.0"
@@ -31,7 +38,10 @@ module "eks_cluster" {
   ]
 
   tags = {
-    Cluster = "k8s"
+    Cluster     = "k8s"
+    Name        = "${var.eks_cluster_name}"
+    Environment = "${var.environment}"
+    Created_By  = "${var.created_by}"
   }
 }
 
@@ -46,19 +56,22 @@ resource "aws_s3_bucket" "eks_cluster_config" {
   tags = {
     Name        = "${var.environment}-eks-cluster-config"
     Environment = "${var.environment}"
+    Created_By  = "${var.created_by}"
   }
 }
 
 resource "aws_s3_bucket_object" "eks_config_files" {
-  bucket = "${var.environment}-eks-cluster-config"
-  key    = "kubeconfig_${var.environment}-${var.eks_cluster_name}"
-  source = "/.kube/kubeconfig_${var.environment}-${var.eks_cluster_name}"
+  bucket     = "${var.environment}-eks-cluster-config"
+  key        = "kubeconfig_${var.environment}-${var.eks_cluster_name}"
+  source     = "/.kube/kubeconfig_${var.environment}-${var.eks_cluster_name}"
+  depends_on = [aws_s3_bucket.eks_cluster_config]
 }
 
 resource "aws_s3_bucket_object" "eks_auth_files" {
-  bucket = "${var.environment}-eks-cluster-config"
-  key    = "config-map-aws-auth_${var.environment}-${var.eks_cluster_name}.yaml"
-  source = "/.kube/config-map-aws-auth_${var.environment}-${var.eks_cluster_name}.yaml"
+  bucket     = "${var.environment}-eks-cluster-config"
+  key        = "config-map-aws-auth_${var.environment}-${var.eks_cluster_name}.yaml"
+  source     = "/.kube/config-map-aws-auth_${var.environment}-${var.eks_cluster_name}.yaml"
+  depends_on = [aws_s3_bucket.eks_cluster_config]
 }
 
 #====Configuring the kubectl and registering the nodes with EKS cluster===
@@ -78,4 +91,3 @@ resource "aws_s3_bucket_object" "eks_auth_files" {
 #    interpreter = ["/bin/bash", "-c"]
 #  }
 #}
-

@@ -1,4 +1,5 @@
 module "db_security_group" {
+  enable              = "${var.db_create}"
   source              = "../modules/aws/network/security_group"
   security_group_name = "rds-sg"
   vpc_id              = "${module.vpc.vpc_id_out}"
@@ -27,6 +28,7 @@ module "db_security_group" {
 }
 
 module "db" {
+  enable     = "${var.db_create}"
   source     = "../modules/aws/database/db_main"
   identifier = "${var.environment}-${var.rds_name}"
 
@@ -50,6 +52,7 @@ module "db" {
   tags = {
     Name        = "${var.environment}-${var.rds_name}"
     Environment = "${var.environment}"
+    Created_By  = "${var.created_by}"
   }
 
   # DB subnet group

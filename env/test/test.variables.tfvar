@@ -57,3 +57,9 @@ db_password                     = "keepyourpasswordsecure"
 codebuild_env_image             = "image_name"
 codebuild_service_role_arn      = "service_role"
 buildspec_path                  = "buildspec.yml"
+
+#=============AWS Secret Mgr variables========
+secret_values = {
+  Value1 = "abcdefgh"
+  Value2 = "123456789"
+}

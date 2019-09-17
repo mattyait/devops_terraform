@@ -16,7 +16,7 @@ data "aws_iam_policy_document" "enhanced_monitoring" {
 }
 
 resource "aws_iam_role" "enhanced_monitoring" {
-  count = var.create_monitoring_role && var.enable == "true" ? 1 : 0
+  count = var.create_monitoring_role ? 1 : 0
 
   name               = var.monitoring_role_name
   assume_role_policy = data.aws_iam_policy_document.enhanced_monitoring.json
@@ -30,14 +30,14 @@ resource "aws_iam_role" "enhanced_monitoring" {
 }
 
 resource "aws_iam_role_policy_attachment" "enhanced_monitoring" {
-  count = var.create_monitoring_role && var.enable == "true" ? 1 : 0
+  count = var.create_monitoring_role ? 1 : 0
 
   role       = aws_iam_role.enhanced_monitoring[0].name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
 }
 
 resource "aws_db_instance" "this" {
-  count = var.create && false == local.is_mssql && var.enable == "true" ? 1 : 0
+  count = var.create && false == local.is_mssql ? 1 : 0
 
   identifier = var.identifier
 
@@ -107,7 +107,7 @@ resource "aws_db_instance" "this" {
 }
 
 resource "aws_db_instance" "this_mssql" {
-  count = var.create && local.is_mssql && var.enable == "true" ? 1 : 0
+  count = var.create && local.is_mssql ? 1 : 0
 
   identifier = var.identifier
 
@@ -175,3 +175,4 @@ resource "aws_db_instance" "this_mssql" {
     update = lookup(var.timeouts, "update", null)
   }
 }
+

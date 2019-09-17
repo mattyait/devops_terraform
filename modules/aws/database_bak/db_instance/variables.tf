@@ -1,7 +1,9 @@
-variable "enable" {
-  description = "Toggle on/off flag for infra part"
-  default = "true"
+variable "create" {
+  description = "Whether to create this resource or not?"
+  type        = bool
+  default     = true
 }
+
 variable "identifier" {
   description = "The name of the RDS instance, if omitted, Terraform will assign a random, unique identifier"
   type        = string
@@ -10,6 +12,12 @@ variable "identifier" {
 variable "allocated_storage" {
   description = "The allocated storage in gigabytes"
   type        = string
+}
+
+variable "max_allocated_storage" {
+  description = "The allocated storage in gigabytes to which Amazon RDS can automatically scale the storage of the DB instance"
+  type        = string
+  default     = "100"
 }
 
 variable "storage_type" {
@@ -64,12 +72,6 @@ variable "engine_version" {
   type        = string
 }
 
-variable "final_snapshot_identifier" {
-  description = "The name of your final DB snapshot when this DB instance is deleted."
-  type        = string
-  default     = null
-}
-
 variable "instance_class" {
   description = "The instance type of the RDS instance"
   type        = string
@@ -96,6 +98,12 @@ variable "port" {
   type        = string
 }
 
+variable "final_snapshot_identifier" {
+  description = "The name of your final DB snapshot when this DB instance is deleted."
+  type        = string
+  default     = null
+}
+
 variable "vpc_security_group_ids" {
   description = "List of VPC security groups to associate"
   type        = list(string)
@@ -108,20 +116,8 @@ variable "db_subnet_group_name" {
   default     = ""
 }
 
-variable "parameter_group_description" {
-  description = "Description of the DB parameter group to create"
-  type        = string
-  default     = ""
-}
-
 variable "parameter_group_name" {
-  description = "Name of the DB parameter group to associate or create"
-  type        = string
-  default     = ""
-}
-
-variable "option_group_name" {
-  description = "Name of the DB option group to associate. Setting this automatically disables option_group creation"
+  description = "Name of the DB parameter group to associate"
   type        = string
   default     = ""
 }
@@ -226,67 +222,10 @@ variable "tags" {
   default     = {}
 }
 
-# DB subnet group
-variable "subnet_ids" {
-  description = "A list of VPC subnet IDs"
-  type        = list(string)
-  default     = []
-}
-
-# DB parameter group
-variable "family" {
-  description = "The family of the DB parameter group"
+variable "option_group_name" {
+  description = "Name of the DB option group to associate."
   type        = string
   default     = ""
-}
-
-variable "parameters" {
-  description = "A list of DB parameters (map) to apply"
-  type        = list(map(string))
-  default     = []
-}
-
-# DB option group
-variable "option_group_description" {
-  description = "The description of the option group"
-  type        = string
-  default     = ""
-}
-
-variable "major_engine_version" {
-  description = "Specifies the major version of the engine that this option group should be associated with"
-  type        = string
-  default     = ""
-}
-
-variable "options" {
-  description = "A list of Options to apply."
-  type        = any
-  default     = []
-}
-
-variable "create_db_subnet_group" {
-  description = "Whether to create a database subnet group"
-  type        = bool
-  default     = true
-}
-
-variable "create_db_parameter_group" {
-  description = "Whether to create a database parameter group"
-  type        = bool
-  default     = true
-}
-
-variable "create_db_option_group" {
-  description = "Whether to create a database option group"
-  type        = bool
-  default     = true
-}
-
-variable "create_db_instance" {
-  description = "Whether to create a database instance"
-  type        = bool
-  default     = true
 }
 
 variable "timezone" {
@@ -323,26 +262,8 @@ variable "deletion_protection" {
   default     = false
 }
 
-variable "use_parameter_group_name_prefix" {
-  description = "Whether to use the parameter group name prefix or not"
-  type        = bool
-  default     = true
-}
-
 variable "performance_insights_enabled" {
   description = "Specifies whether Performance Insights are enabled"
   type        = bool
   default     = false
-}
-
-variable "performance_insights_retention_period" {
-  description = "The amount of time in days to retain Performance Insights data. Either 7 (7 days) or 731 (2 years)."
-  type        = number
-  default     = 7
-}
-
-variable "max_allocated_storage" {
-  description = "Specifies the value for Storage Autoscaling"
-  type        = number
-  default     = 0
 }

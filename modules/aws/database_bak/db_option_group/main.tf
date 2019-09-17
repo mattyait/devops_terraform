@@ -1,5 +1,5 @@
 resource "aws_db_option_group" "this" {
-  count = var.create && var.enable == "true" ? 1 : 0
+  count = var.create ? 1 : 0
 
   name_prefix              = var.name_prefix
   option_group_description = var.option_group_description == "" ? format("Option group for %s", var.identifier) : var.option_group_description
@@ -36,3 +36,4 @@ resource "aws_db_option_group" "this" {
     create_before_destroy = true
   }
 }
+

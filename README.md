@@ -3,15 +3,15 @@
 
 Build the docker image
 
-    docker build -t terraform/terraform:latest -f Dockerfile .
+    docker build -t terraform/devops_terraform:latest -f Dockerfile .
 
 Run the docker container
 
-    docker run -i -d -v $(pwd):/mnt/workspace terraform/terraform:latest
+    docker run -i -d -v $(pwd):/mnt/workspace terraform/devops_terraform:latest
 
 Enter the Container and use it as a Dev Environment
 
-    docker exec -it $(docker ps | grep terraform:latest | awk '{print $1}') bash
+    docker exec -it $(docker ps | grep devops_terraform:latest | awk '{print $1}') bash
 
 Setup the AWS Credentials
 
@@ -23,10 +23,11 @@ Setup the AWS Credentials
 
 # Customize way of handling multiple environment for this project structure
 
+terraform is using S3 as backend so create a s3 bucket used in backend variable file: `test.backend.tfvar`
 Cd into the specific environment folder and run the terraform
 
     cd devops_terraform/env/test
-    terraform init -var-file=test.variables.tfvar -backend-config=test.backend.tfvars ../../deployment/
+    terraform init -reconfigure -var-file=test.variables.tfvar -backend-config=test.backend.tfvar ../../deployment/
     terraform plan -var-file=test.variables.tfvar ../../deployment
     terraform apply -var-file=test.variables.tfvar ../../deployment
 

@@ -1,8 +1,3 @@
-variable "enable" {
-  default = "true"
-  description = "Toggle on/off flag for infra part"
-}
-
 variable "create" {
   description = "Whether to create this resource or not?"
   type        = bool
