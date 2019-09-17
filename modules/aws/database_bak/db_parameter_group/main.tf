@@ -3,7 +3,7 @@ locals {
 }
 
 resource "aws_db_parameter_group" "this_no_prefix" {
-  count = var.create && false == var.use_name_prefix && var.enable == "true" ? 1 : 0
+  count = var.create && false == var.use_name_prefix ? 1 : 0
 
   name        = var.name
   description = local.description
@@ -31,7 +31,7 @@ resource "aws_db_parameter_group" "this_no_prefix" {
 }
 
 resource "aws_db_parameter_group" "this" {
-  count = var.create && var.use_name_prefix && var.enable == "true" ? 1 : 0
+  count = var.create && var.use_name_prefix ? 1 : 0
 
   name_prefix = var.name_prefix
   description = local.description
@@ -57,3 +57,4 @@ resource "aws_db_parameter_group" "this" {
     create_before_destroy = true
   }
 }
+

@@ -22,8 +22,18 @@ variable ecs_service_create {
 variable codebuild_create {
   default = "true"
 }
+variable db_create {
+  default = "true"
+}
+variable aws_secret_create {
+  default = "true"
+}
+variable eks_worker_key_pair {
+  default = "true"
+}
 #====Global Vairable for whole suite====
 variable environment {}
+variable created_by { default = "terraform" }
 
 variable aws_profile {
   default = "default"
@@ -146,3 +156,6 @@ variable db_password {}
 variable codebuild_env_image {}
 variable codebuild_service_role_arn {}
 variable buildspec_path {}
+
+#==========AWS Secret Manager Variable=====
+variable secret_values {}

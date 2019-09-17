@@ -8,6 +8,7 @@ module "vpc" {
     Name                                                               = "${var.environment}-${var.vpc_name}"
     Environment                                                        = "${var.environment}"
     "kubernetes.io/cluster/${var.environment}-${var.eks_cluster_name}" = "shared"
+    Created_By                                                         = "${var.created_by}"
   }
 
   enable = "${var.vpc_create}"
@@ -21,6 +22,7 @@ module "internet_gateway" {
   tags = {
     Name        = "${var.environment}_int_gateway"
     Environment = "${var.environment}"
+    Created_By  = "${var.created_by}"
   }
 
   enable = "${var.internet_gateway_create}"
@@ -35,6 +37,7 @@ module "public_route" {
   tags = {
     Name        = "${var.environment}_public"
     Environment = "${var.environment}"
+    Created_By  = "${var.created_by}"
   }
 
   enable = "${var.public_route_create}"
@@ -52,6 +55,7 @@ module "public_subnet_1a" {
     Environment                                                        = "${var.environment}"
     "kubernetes.io/cluster/${var.environment}-${var.eks_cluster_name}" = "shared"
     "kubernetes.io/role/elb"                                           = 1
+    Created_By                                                         = "${var.created_by}"
   }
 }
 
@@ -66,6 +70,7 @@ module "public_subnet_1b" {
     Environment                                                        = "${var.environment}"
     "kubernetes.io/cluster/${var.environment}-${var.eks_cluster_name}" = "shared"
     "kubernetes.io/role/elb"                                           = 1
+    Created_By                                                         = "${var.created_by}"
   }
 }
 
@@ -89,6 +94,7 @@ module "nat_gateway_1a" {
   tags = {
     Name        = "${var.environment}_public_1a"
     Environment = "${var.environment}"
+    Created_By  = "${var.created_by}"
   }
 }
 
@@ -103,6 +109,7 @@ module "private_subnet_1a" {
     Environment                                                        = "${var.environment}"
     "kubernetes.io/cluster/${var.environment}-${var.eks_cluster_name}" = "shared"
     "kubernetes.io/role/internal-elb"                                  = 1
+    Created_By                                                         = "${var.created_by}"
   }
 }
 
@@ -115,6 +122,7 @@ module "private_route_1a" {
   tags = {
     Name        = "${var.environment}_private_1a"
     Environment = "${var.environment}"
+    Created_By  = "${var.created_by}"
   }
 }
 
@@ -133,6 +141,7 @@ module "nat_gateway_1b" {
   tags = {
     Name        = "${var.environment}_public_1b"
     Environment = "${var.environment}"
+    Created_By  = "${var.created_by}"
   }
 }
 
@@ -147,6 +156,7 @@ module "private_subnet_1b" {
     Environment                                                        = "${var.environment}"
     "kubernetes.io/cluster/${var.environment}-${var.eks_cluster_name}" = "shared"
     "kubernetes.io/role/internal-elb"                                  = 1
+    Created_By                                                         = "${var.created_by}"
   }
 }
 
@@ -159,6 +169,7 @@ module "private_route_1b" {
   tags = {
     Name        = "${var.environment}_private_1b"
     Environment = "${var.environment}"
+    Created_By  = "${var.created_by}"
   }
 }
 

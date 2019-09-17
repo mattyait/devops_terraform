@@ -1,5 +1,5 @@
 #==========Backend Variables==========
 region          =   "ap-southeast-2"
-bucket          =   "terraform-state-demo.com"
+bucket          =   "terraformbackend-state-demo.com"
 key             =   "test/state.tfstate"
 dynamo_db_lock  =  "test-terraform-state-lock-dynamo"

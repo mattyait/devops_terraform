@@ -10,14 +10,14 @@ module "codeBuild" {
   buildspec        = "${var.buildspec_path}"
   privileged_mode  = false
   source_provider  = "CODECOMMIT"
-  repository_url   = "https://git-codecommit.ap-southeast-2.amazonaws.com/v1/repos/<repo-name>"
+  repository_url   = "https://github.com/mattyait/devops_terraform.git"
 
   environment_variables = [{
     name  = "ENVIRONMENT"
-    value = "dev"
-  },
+    value = "${var.environment}"
+    },
     {
-      name  = "ENVIRONMENT1"
+      name  = "ENV_VALUE_KEYNAME"
       value = "somevalue"
     },
   ]
@@ -25,5 +25,6 @@ module "codeBuild" {
   tags = {
     Name        = "codebuild-${var.environment}"
     Environment = "${var.environment}"
+    Created_By  = "${var.created_by}"
   }
 }
