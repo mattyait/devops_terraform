@@ -57,6 +57,7 @@ resource "aws_s3_bucket" "eks_cluster_config" {
     Name        = "${var.environment}-eks-cluster-config"
     Environment = "${var.environment}"
     Created_By  = "${var.created_by}"
+    depend_on   = "${module.eks_cluster.cluster_id}"
   }
 }
 
