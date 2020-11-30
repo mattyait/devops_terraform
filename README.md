@@ -160,7 +160,7 @@ To list and Select the specification workspace
       security_group_ids = ["${module.ecs_cluster_security_group.security_group_id_out}"]
     }
 
-# Ecs service
+# Ecs service example
 
     module "app_ecs_service" {
       source                        = "../../modules/aws/compute/ecs_service"
