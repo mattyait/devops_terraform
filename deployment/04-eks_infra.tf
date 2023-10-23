@@ -89,3 +89,28 @@ resource "aws_iam_policy" "additional" {
     ]
   })
 }
+
+
+data "template_file" "alb_controller_iam_policy" {
+  count   = var.eks_cluster_create ? 1 : 0
+  template = file("../templates/eks/alb_controller_policy.json.tpl")
+}
+
+# Creating AWS ALB Controller on EKS Cluster Fargate
+module "eks_alb_controller" {
+  count   = var.eks_cluster_create ? 1 : 0
+  source                        = "../modules/aws/compute/eks_alb_controller"
+  role_name = "${var.environment}_eks_alb_controller"
+  policy    = data.template_file.alb_controller_iam_policy[0].rendered
+
+  oidc_providers = {
+    main = {
+      provider_arn               = "arn:aws:iam::${local.account_id}:oidc-provider/${module.eks[0].oidc_provider}"
+      namespace_service_accounts = ["kube-system:aws-load-balancer-controller"]
+    }
+  }
+  aws_region          = var.aws_region
+  vpc_id              = module.vpc.vpc_id_out
+  eks_cluster_name    = "${var.eks_cluster_name}-eks-${var.environment}"
+  tags                = local.tags
+}

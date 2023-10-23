@@ -29,9 +29,6 @@ override.tf.json
 .terraformrc
 terraform.rc
 
-# Exluding modules folder from main infra
-modules
-
 # Any Secrets
 auth.*
 keys.*

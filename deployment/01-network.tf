@@ -7,7 +7,7 @@ module "vpc" {
   tags = {
     Name                                                               = "${var.environment}-${var.vpc_name}"
     Environment                                                        = "${var.environment}"
-    "kubernetes.io/cluster/${var.environment}-${var.eks_cluster_name}" = "shared"
+    "kubernetes.io/cluster/${var.eks_cluster_name}-eks-${var.environment}" = "shared"
     Created_By                                                         = "${var.created_by}"
   }
 
@@ -49,7 +49,7 @@ module "public_subnet_1a" {
   tags = {
     Name                                                               = "${var.environment}_public_1a"
     Environment                                                        = "${var.environment}"
-    "kubernetes.io/cluster/${var.environment}-${var.eks_cluster_name}" = "shared"
+    "kubernetes.io/cluster/${var.eks_cluster_name}-eks-${var.environment}" = "shared"
     "kubernetes.io/role/elb"                                           = 1
     Created_By                                                         = "${var.created_by}"
   }
@@ -64,7 +64,7 @@ module "public_subnet_1b" {
   tags = {
     Name                                                               = "${var.environment}_public_1b"
     Environment                                                        = "${var.environment}"
-    "kubernetes.io/cluster/${var.environment}-${var.eks_cluster_name}" = "shared"
+    "kubernetes.io/cluster/${var.eks_cluster_name}-eks-${var.environment}" = "shared"
     "kubernetes.io/role/elb"                                           = 1
     Created_By                                                         = "${var.created_by}"
   }
@@ -103,7 +103,7 @@ module "private_subnet_1a" {
   tags = {
     Name                                                               = "${var.environment}_private_1a"
     Environment                                                        = "${var.environment}"
-    "kubernetes.io/cluster/${var.environment}-${var.eks_cluster_name}" = "shared"
+    "kubernetes.io/cluster/${var.eks_cluster_name}-eks-${var.environment}" = "shared"
     "kubernetes.io/role/internal-elb"                                  = 1
     Created_By                                                         = "${var.created_by}"
   }
@@ -150,7 +150,7 @@ module "private_subnet_1b" {
   tags = {
     Name                                                               = "${var.environment}_private_1b"
     Environment                                                        = "${var.environment}"
-    "kubernetes.io/cluster/${var.environment}-${var.eks_cluster_name}" = "shared"
+    "kubernetes.io/cluster/${var.eks_cluster_name}-eks-${var.environment}" = "shared"
     "kubernetes.io/role/internal-elb"                                  = 1
     Created_By                                                         = "${var.created_by}"
   }
