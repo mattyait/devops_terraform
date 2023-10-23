@@ -1,5 +1,5 @@
 variable "enable" {
-  default = "true"
+  default     = "true"
   description = "Toggle on/off flag for infra part"
 }
 

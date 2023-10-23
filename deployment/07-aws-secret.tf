@@ -1,9 +1,9 @@
 module "aws-secrets-manager" {
-  enable             = "${var.aws_secret_create}"
+  count              = var.aws_secret_create ? 1 : 0
   source             = "../modules/aws/security/secret-manager"
   name               = "demo-${var.environment}-sm"
   description        = "Secret for demo application for ${var.environment} environment"
-  secret_data_values = "${var.secret_values}"
+  secret_data_values = var.secret_values
 
   tags = {
     Name        = "demo-${var.environment}-sm"

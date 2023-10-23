@@ -1,0 +1,181 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "This CloudFormation Stack creates AppStream resources within the default VPC."
+
+Parameters:
+  AppStreamFleetName:
+    Type: String
+    Default: demo_fleet_new
+    Description: Name of the appstream fleet
+  AppStreamStackName:
+    Type: String
+    Default: demo_stack_new
+  FleetImageName:
+    Type: String
+    Default: Sample_Image_6Apr
+    Description: Fleet Image
+  FleetInstanceType:
+    Type: String
+    Default: stream.standard.medium
+
+Resources:
+  AppStreamFleet:
+    Type: "AWS::AppStream::Fleet"
+    Properties:
+      Name: { "Ref" : "AppStreamFleetName" }
+      Description: "This is a fleet that was created using CloudFormation"
+      DisplayName: "A fleet created in CloudFormation"
+      ImageName: { "Ref" : "FleetImageName" }
+      InstanceType: { "Ref" : "FleetInstanceType" }
+      FleetType: "ALWAYS_ON"
+      ComputeCapacity:
+        DesiredInstances: 1
+      VpcConfig:
+        SubnetIds:
+          - ${private_subnet_1a}
+          - ${private_subnet_1b}
+        SecurityGroupIds:
+          - ${security_group}
+      MaxUserDurationInSeconds: "57600"
+      DisconnectTimeoutInSeconds: "900"
+      EnableDefaultInternetAccess: False
+    CreationPolicy:
+      StartFleet: True
+
+  ScaleTarget:
+    Type: 'AWS::ApplicationAutoScaling::ScalableTarget'
+    Properties:
+      MinCapacity: 1
+      MaxCapacity: 5
+      ResourceId:  !Join
+        - ''
+        - - 'fleet/'
+          - !Ref AppStreamFleet
+      RoleARN: >-
+        ${appstream_role_arn}
+      ScalableDimension: 'appstream:fleet:DesiredCapacity'
+      ServiceNamespace: appstream
+    DependsOn:
+      - AppStreamFleet
+
+  ScaleInPolicy:
+    Type: 'AWS::ApplicationAutoScaling::ScalingPolicy'
+    Properties:
+      PolicyName: !Join
+        - ''
+        - - 'ScaleIn-'
+          - !Ref AppStreamFleet
+      PolicyType: StepScaling
+      ScalingTargetId: !Ref ScaleTarget
+      StepScalingPolicyConfiguration:
+        AdjustmentType: ChangeInCapacity
+        Cooldown: 360
+        MetricAggregationType: Average
+        StepAdjustments:
+          - MetricIntervalUpperBound: 0.0
+            ScalingAdjustment: -1
+    DependsOn:
+      - ScaleTarget
+
+  ScaleOutPolicy:
+    Type: 'AWS::ApplicationAutoScaling::ScalingPolicy'
+    Properties:
+      PolicyName:  !Join
+        - ''
+        - - 'ScaleOut-'
+          - !Ref AppStreamFleet
+      PolicyType: StepScaling
+      ScalingTargetId: !Ref ScaleTarget
+      StepScalingPolicyConfiguration:
+        AdjustmentType: ChangeInCapacity
+        Cooldown: 120
+        MetricAggregationType: Average
+        StepAdjustments:
+          - MetricIntervalLowerBound: 0.0
+            ScalingAdjustment: 2
+    DependsOn:
+      - ScaleTarget
+
+  ScaleInAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties :
+      AlarmActions :
+        - !Ref ScaleInPolicy
+      AlarmDescription : "Scale in the fleet when using 25% capacity"
+      AlarmName :  !Join
+        - ''
+        - - 'ScaleInAlarm'
+          - !Ref AppStreamFleet
+      Dimensions :
+        - Name: Fleet
+          Value: !Ref AppStreamFleet
+      MetricName : CapacityUtilization
+      Namespace : AWS/AppStream
+      Period : 120
+      EvaluationPeriods : 10
+      Statistic : Average
+      Threshold : 25
+      ComparisonOperator : LessThanOrEqualToThreshold
+      Unit : Percent
+    DependsOn:
+      - ScaleInPolicy
+
+  ScaleOutAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties :
+      AlarmActions :
+        - !Ref ScaleOutPolicy
+      AlarmDescription : "Scale out the fleet when using 75% capacity"
+      AlarmName :  !Join
+        - ''
+        - - 'ScaleOutAlarm'
+          - !Ref AppStreamFleet
+      Dimensions :
+        - Name: Fleet
+          Value: !Ref AppStreamFleet
+      MetricName : CapacityUtilization
+      Namespace : AWS/AppStream
+      Period : 60
+      EvaluationPeriods : 3
+      Statistic : Average
+      Threshold : 75
+      ComparisonOperator : GreaterThanOrEqualToThreshold
+      Unit : Percent
+    DependsOn:
+      - ScaleOutPolicy
+
+  AppStreamStack:
+    Type: "AWS::AppStream::Stack"
+    Properties:
+      Name: { "Ref" : "AppStreamStackName" }
+      Description: "This was created using CloudFormation"
+      StorageConnectors:
+        - ConnectorType: "HOMEFOLDERS"
+          ResourceIdentifier: ${storage_s3_arn}
+
+  AppStreamDemoStackFleetAssociation:
+    Type: 'AWS::AppStream::StackFleetAssociation'
+    Properties:
+      FleetName: !Ref AppStreamFleet
+      StackName: !Ref AppStreamStack
+    DependsOn:
+      - AppStreamFleet
+      - AppStreamStack
+
+  AppStreamUser:
+    Type: "AWS::AppStream::User"
+    Properties:
+      UserName: "mattyait@gmail.com"
+      FirstName: "Mahattam"
+      LastName: "Tomar"
+      AuthenticationType: "USERPOOL"
+
+  AppStreamStackUserAssociation:
+    Type: "AWS::AppStream::StackUserAssociation"
+    Properties:
+      UserName: "mattyait@gmail.com"
+      StackName: !Ref AppStreamStack
+      SendEmailNotification: False
+      AuthenticationType: "USERPOOL"
+    DependsOn:
+     - AppStreamStack
+     - AppStreamUser

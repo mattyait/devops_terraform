@@ -18,11 +18,11 @@ variable "secret_data_values" {
     key2 = "value2"
   }
 
-  type = "map"
+  type = map(string)
 }
 
 variable "tags" {
   default     = {}
-  type        = "map"
+  type        = map(string)
   description = "A mapping of tags to assign to all resources."
 }

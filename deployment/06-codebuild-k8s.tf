@@ -1,13 +1,13 @@
 module "codeBuild" {
-  enable           = "${var.codebuild_create}"
+  count            = var.codebuild_create ? 1 : 0
   source           = "../modules/aws/developertools/codebuild"
   name             = "codebuild-${var.environment}"
   description      = "Codebuild deployment for ${var.environment} environment"
-  service_role     = "${var.codebuild_service_role_arn}"
+  service_role     = var.codebuild_service_role_arn
   environment_type = "LINUX_CONTAINER"
   compute_type     = "BUILD_GENERAL1_SMALL"
-  image            = "${var.codebuild_env_image}"
-  buildspec        = "${var.buildspec_path}"
+  image            = var.codebuild_env_image
+  buildspec        = var.buildspec_path
   privileged_mode  = false
   source_provider  = "CODECOMMIT"
   repository_url   = "https://github.com/mattyait/devops_terraform.git"

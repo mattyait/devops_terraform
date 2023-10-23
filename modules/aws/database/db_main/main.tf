@@ -10,8 +10,8 @@ locals {
 }
 
 module "db_subnet_group" {
-  source = "../../../../modules/aws/database/db_subnet_group"
-  enable     = "${var.enable}"
+  source      = "../../../../modules/aws/database/db_subnet_group"
+  enable      = var.enable
   create      = local.enable_create_db_subnet_group
   identifier  = var.identifier
   name_prefix = "${var.identifier}-"
@@ -21,8 +21,8 @@ module "db_subnet_group" {
 }
 
 module "db_parameter_group" {
-  source = "../../../../modules/aws/database/db_parameter_group"
-  enable     = "${var.enable}"
+  source          = "../../../../modules/aws/database/db_parameter_group"
+  enable          = var.enable
   create          = var.create_db_parameter_group
   identifier      = var.identifier
   name            = var.parameter_group_name
@@ -37,8 +37,8 @@ module "db_parameter_group" {
 }
 
 module "db_option_group" {
-  source = "../../../../modules/aws/database/db_option_group"
-  enable     = "${var.enable}"
+  source                   = "../../../../modules/aws/database/db_option_group"
+  enable                   = var.enable
   create                   = local.enable_create_db_option_group
   identifier               = var.identifier
   name_prefix              = "${var.identifier}-"
@@ -52,8 +52,8 @@ module "db_option_group" {
 }
 
 module "db_instance" {
-  source = "../../../../modules/aws/database/db_instance"
-  enable     = "${var.enable}"
+  source            = "../../../../modules/aws/database/db_instance"
+  enable            = var.enable
   create            = var.create_db_instance
   identifier        = var.identifier
   engine            = var.engine

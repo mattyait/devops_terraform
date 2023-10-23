@@ -1,9 +1,9 @@
 module "db_security_group" {
-  enable              = "${var.db_create}"
+  count               = var.db_create ? 1 : 0
   source              = "../modules/aws/network/security_group"
   security_group_name = "rds-sg"
-  vpc_id              = "${module.vpc.vpc_id_out}"
-  environment         = "${var.environment}"
+  vpc_id              = module.vpc.vpc_id_out
+  environment         = var.environment
   description         = "rds-sg"
 
   ingress_with_source_security_group_id = [
@@ -12,7 +12,7 @@ module "db_security_group" {
       to_port                  = 3306
       protocol                 = "tcp"
       description              = "MYSQL port"
-      source_security_group_id = "${module.eks_cluster.worker_security_group_id}"
+      source_security_group_id = "${module.eks[0].cluster_security_group_id}"
     },
   ]
 
@@ -28,23 +28,23 @@ module "db_security_group" {
 }
 
 module "db" {
-  enable     = "${var.db_create}"
+  count      = var.db_create ? 1 : 0
   source     = "../modules/aws/database/db_main"
   identifier = "${var.environment}-${var.rds_name}"
 
-  engine            = "${var.db_engine}"
-  engine_version    = "${var.db_engine_version}"
-  instance_class    = "${var.db_instance_type}"
-  allocated_storage = "${var.db_allocated_storage}"
+  engine            = var.db_engine
+  engine_version    = var.db_engine_version
+  instance_class    = var.db_instance_type
+  allocated_storage = var.db_allocated_storage
 
-  name     = "${var.rds_name}"
-  username = "${var.db_username}"
-  password = "${var.db_password}"
+  name     = var.rds_name
+  username = var.db_username
+  password = var.db_password
   port     = "3306"
 
   iam_database_authentication_enabled = true
 
-  vpc_security_group_ids = ["${module.db_security_group.security_group_id_out}"]
+  vpc_security_group_ids = ["${module.db_security_group[0].security_group_id_out}"]
 
   maintenance_window = "Mon:00:00-Mon:03:00"
   backup_window      = "03:00-06:00"

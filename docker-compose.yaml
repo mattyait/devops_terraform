@@ -1,0 +1,11 @@
+version: '3'
+services:
+  terraform:
+    build:
+      context: .
+    volumes:
+    - .:/mnt/
+    - ~/.aws/:/root/.aws
+    - ~/.ssh/:/root/.ssh
+    working_dir: /mnt
+    env_file: .env

@@ -1,13 +1,13 @@
-variable name {
+variable "name" {
   description = "VPC Name"
   default     = "demo"
 }
-variable tags {
+variable "tags" {
   description = "A map of tags to add to all resources"
-  type        = map
+  type        = map(any)
   default     = {}
 }
-variable vpc_cidr_block {}
-variable enable {
+variable "vpc_cidr_block" {}
+variable "enable" {
   default = "true"
 }

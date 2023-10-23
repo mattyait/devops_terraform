@@ -21,8 +21,8 @@ locals {
 #
 
 resource "aws_ecs_cluster" "main" {
-  count = "${var.enable == "true" ? 1 : 0}"
-  name  = "${local.cluster_name}"
+  count = var.enable == "true" ? 1 : 0
+  name  = local.cluster_name
 
   lifecycle {
     create_before_destroy = true
@@ -41,7 +41,7 @@ resource "aws_ecs_cluster" "main" {
 # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
 
 data "aws_iam_policy_document" "ecs_instance_assume_role_policy" {
-  count = "${var.enable == "true" ? 1 : 0}"
+  count = var.enable == "true" ? 1 : 0
 
   statement {
     actions = ["sts:AssumeRole"]
@@ -54,22 +54,22 @@ data "aws_iam_policy_document" "ecs_instance_assume_role_policy" {
 }
 
 resource "aws_iam_role" "ecs_instance_role" {
-  count              = "${var.enable == "true" ? 1 : 0}"
+  count              = var.enable == "true" ? 1 : 0
   name               = "ecs-instance-role-${local.cluster_name}"
-  assume_role_policy = "${data.aws_iam_policy_document.ecs_instance_assume_role_policy[0].json}"
+  assume_role_policy = data.aws_iam_policy_document.ecs_instance_assume_role_policy[0].json
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_instance_role_policy" {
-  count      = "${var.use_AmazonEC2ContainerServiceforEC2Role_policy && var.enable == "true" ? 1 : 0}"
-  role       = "${aws_iam_role.ecs_instance_role[0].name}"
+  count      = var.use_AmazonEC2ContainerServiceforEC2Role_policy && var.enable == "true" ? 1 : 0
+  role       = aws_iam_role.ecs_instance_role[0].name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
 }
 
 resource "aws_iam_instance_profile" "ecs_instance_profile" {
-  count = "${var.enable == "true" ? 1 : 0}"
+  count = var.enable == "true" ? 1 : 0
   name  = "ecsInstanceRole-${local.cluster_name}"
   path  = "/"
-  role  = "${aws_iam_role.ecs_instance_role[0].name}"
+  role  = aws_iam_role.ecs_instance_role[0].name
 }
 
 #
@@ -103,27 +103,27 @@ resource "aws_iam_instance_profile" "ecs_instance_profile" {
 #
 
 resource "aws_launch_configuration" "main" {
-  count       = "${var.enable == "true" ? 1 : 0}"
-  name_prefix = "${format("ecs-%s-", local.cluster_name)}"
+  count       = var.enable == "true" ? 1 : 0
+  name_prefix = format("ecs-%s-", local.cluster_name)
 
-  iam_instance_profile = "${aws_iam_instance_profile.ecs_instance_profile[0].name}"
+  iam_instance_profile = aws_iam_instance_profile.ecs_instance_profile[0].name
 
-  instance_type               = "${var.instance_type}"
-  image_id                    = "${var.image_id}"
+  instance_type               = var.instance_type
+  image_id                    = var.image_id
   associate_public_ip_address = false
-  security_groups             = "${var.security_group_ids}"
-  key_name                    = "${var.key_name}"
+  security_groups             = var.security_group_ids
+  key_name                    = var.key_name
 
   root_block_device {
     volume_type = "standard"
-    volume_size = "${var.root_volume_size}"
+    volume_size = var.root_volume_size
   }
 
   ebs_block_device {
     device_name = "/dev/xvdcz"
     volume_type = "standard"
     encrypted   = true
-    volume_size = "${var.ebs_volume_size}"
+    volume_size = var.ebs_volume_size
   }
 
   user_data = <<EOF
@@ -140,16 +140,16 @@ EOF
 }
 
 resource "aws_autoscaling_group" "main" {
-  count = "${var.enable == "true" ? 1 : 0}"
+  count = var.enable == "true" ? 1 : 0
   name  = "ecs-${local.cluster_name}"
 
-  launch_configuration = "${aws_launch_configuration.main[0].id}"
+  launch_configuration = aws_launch_configuration.main[0].id
   termination_policies = ["OldestLaunchConfiguration", "Default"]
-  vpc_zone_identifier  = "${var.subnet_ids}"
+  vpc_zone_identifier  = var.subnet_ids
 
-  desired_capacity = "${var.desired_capacity}"
-  max_size         = "${var.max_size}"
-  min_size         = "${var.min_size}"
+  desired_capacity = var.desired_capacity
+  max_size         = var.max_size
+  min_size         = var.min_size
 
   lifecycle {
     create_before_destroy = true
@@ -163,13 +163,13 @@ resource "aws_autoscaling_group" "main" {
 
   tag {
     key                 = "Cluster"
-    value               = "${local.cluster_name}"
+    value               = local.cluster_name
     propagate_at_launch = true
   }
 
   tag {
     key                 = "Environment"
-    value               = "${var.environment}"
+    value               = var.environment
     propagate_at_launch = true
   }
 

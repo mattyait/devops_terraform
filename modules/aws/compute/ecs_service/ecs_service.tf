@@ -17,8 +17,8 @@
  */
 
 locals {
-  awslogs_group         = "${var.logs_cloudwatch_group == "" ? "/ecs/${var.environment}/${var.name}" : var.logs_cloudwatch_group}"
-  target_container_name = "${var.target_container_name == "" ? "${var.name}-${var.environment}" : var.target_container_name}"
+  awslogs_group         = var.logs_cloudwatch_group == "" ? "/ecs/${var.environment}/${var.name}" : var.logs_cloudwatch_group
+  target_container_name = var.target_container_name == "" ? "${var.name}-${var.environment}" : var.target_container_name
 
   default_container_definitions = <<EOF
 [
@@ -62,9 +62,9 @@ EOF
 #
 
 resource "aws_cloudwatch_log_group" "main" {
-  count                = "${var.enable == "true" ? 1 : 0}"
-  name              = "${local.awslogs_group}"
-  retention_in_days = "${var.logs_cloudwatch_retention}"
+  count             = var.enable == "true" ? 1 : 0
+  name              = local.awslogs_group
+  retention_in_days = var.logs_cloudwatch_retention
 
   tags = {
     Name        = "${var.name}-${var.environment}"
@@ -78,10 +78,10 @@ resource "aws_cloudwatch_log_group" "main" {
 #
 
 resource "aws_security_group" "ecs_sg" {
-  count                = "${var.enable == "true" ? 1 : 0}"
+  count       = var.enable == "true" ? 1 : 0
   name        = "ecs-${var.name}-${var.environment}"
   description = "${var.name}-${var.environment} container security group"
-  vpc_id      = "${var.ecs_vpc_id}"
+  vpc_id      = var.ecs_vpc_id
 
   tags = {
     Name        = "ecs-${var.name}-${var.environment}"
@@ -91,9 +91,9 @@ resource "aws_security_group" "ecs_sg" {
 }
 
 resource "aws_security_group_rule" "app_ecs_allow_outbound" {
-  count                = "${var.enable == "true" ? 1 : 0}"
+  count             = var.enable == "true" ? 1 : 0
   description       = "All outbound"
-  security_group_id = "${aws_security_group.ecs_sg[0].id}"
+  security_group_id = aws_security_group.ecs_sg[0].id
 
   type        = "egress"
   from_port   = 0
@@ -103,56 +103,56 @@ resource "aws_security_group_rule" "app_ecs_allow_outbound" {
 }
 
 resource "aws_security_group_rule" "app_ecs_allow_https_from_alb" {
-  count = "${var.associate_alb && var.container_port > 0 && var.enable == "true" ? 1 : 0}"
+  count = var.associate_alb && var.container_port > 0 && var.enable == "true" ? 1 : 0
 
   description       = "Allow in ALB"
-  security_group_id = "${aws_security_group.ecs_sg[0].id}"
+  security_group_id = aws_security_group.ecs_sg[0].id
 
   type                     = "ingress"
-  from_port                = "${var.container_port}"
-  to_port                  = "${var.container_port}"
+  from_port                = var.container_port
+  to_port                  = var.container_port
   protocol                 = "tcp"
-  source_security_group_id = "${var.alb_security_group}"
+  source_security_group_id = var.alb_security_group
 }
 
 resource "aws_security_group_rule" "app_ecs_allow_health_check_from_alb" {
-  count = "${var.associate_alb && var.container_health_check_port > 0 && var.enable == "true" ? 1 : 0}"
+  count = var.associate_alb && var.container_health_check_port > 0 && var.enable == "true" ? 1 : 0
 
 
   description       = "Allow in health check from ALB"
-  security_group_id = "${aws_security_group.ecs_sg[0].id}"
+  security_group_id = aws_security_group.ecs_sg[0].id
 
   type                     = "ingress"
-  from_port                = "${var.container_health_check_port}"
-  to_port                  = "${var.container_health_check_port}"
+  from_port                = var.container_health_check_port
+  to_port                  = var.container_health_check_port
   protocol                 = "tcp"
-  source_security_group_id = "${var.alb_security_group}"
+  source_security_group_id = var.alb_security_group
 }
 
 resource "aws_security_group_rule" "app_ecs_allow_tcp_from_nlb" {
-  count = "${var.associate_nlb && var.container_port > 0 && var.enable == "true" ? 1 : 0}"
+  count = var.associate_nlb && var.container_port > 0 && var.enable == "true" ? 1 : 0
 
   description       = "Allow in NLB"
-  security_group_id = "${aws_security_group.ecs_sg[0].id}"
+  security_group_id = aws_security_group.ecs_sg[0].id
 
   type        = "ingress"
-  from_port   = "${var.container_port}"
-  to_port     = "${var.container_port}"
+  from_port   = var.container_port
+  to_port     = var.container_port
   protocol    = "tcp"
-  cidr_blocks = "${var.nlb_subnet_cidr_blocks}"
+  cidr_blocks = var.nlb_subnet_cidr_blocks
 }
 
 resource "aws_security_group_rule" "app_ecs_allow_health_check_from_nlb" {
-  count = "${var.associate_nlb && var.container_health_check_port > 0 && var.enable == "true" ? 1 : 0}"
+  count = var.associate_nlb && var.container_health_check_port > 0 && var.enable == "true" ? 1 : 0
 
   description       = "Allow in health check from NLB"
-  security_group_id = "${aws_security_group.ecs_sg[0].id}"
+  security_group_id = aws_security_group.ecs_sg[0].id
 
   type        = "ingress"
-  from_port   = "${var.container_health_check_port}"
-  to_port     = "${var.container_health_check_port}"
+  from_port   = var.container_health_check_port
+  to_port     = var.container_health_check_port
   protocol    = "tcp"
-  cidr_blocks = "${var.nlb_subnet_cidr_blocks}"
+  cidr_blocks = var.nlb_subnet_cidr_blocks
 }
 
 #
@@ -160,7 +160,7 @@ resource "aws_security_group_rule" "app_ecs_allow_health_check_from_nlb" {
 #
 
 data "aws_iam_policy_document" "instance_role_policy_doc" {
-  count = "${var.ecs_instance_role != "" && var.enable == "true" ? 1 : 0}"
+  count = var.ecs_instance_role != "" && var.enable == "true" ? 1 : 0
 
   statement {
     actions = [
@@ -220,17 +220,17 @@ data "aws_iam_policy_document" "instance_role_policy_doc" {
       "ecr:BatchGetImage",
     ]
 
-    resources = "${var.ecr_repo_arns}"
+    resources = var.ecr_repo_arns
   }
 }
 
 resource "aws_iam_role_policy" "instance_role_policy" {
-  count = "${var.ecs_instance_role != "" && var.enable == "true" ? 1 : 0}"
+  count = var.ecs_instance_role != "" && var.enable == "true" ? 1 : 0
 
-  name   = "${var.ecs_instance_role}-policy"
-  role   = "${var.ecs_instance_role}"
+  name = "${var.ecs_instance_role}-policy"
+  role = var.ecs_instance_role
   #policy = "${data.aws_iam_policy_document.instance_role_policy_doc.json}"
-  policy  = "${data.aws_iam_policy_document.instance_role_policy_doc[count.index].json}"
+  policy = data.aws_iam_policy_document.instance_role_policy_doc[count.index].json
 }
 
 #
@@ -238,7 +238,7 @@ resource "aws_iam_role_policy" "instance_role_policy" {
 #
 
 data "aws_iam_policy_document" "ecs_assume_role_policy" {
-  count                = "${var.enable == "true" ? 1 : 0}"
+  count = var.enable == "true" ? 1 : 0
   statement {
     actions = ["sts:AssumeRole"]
 
@@ -250,7 +250,7 @@ data "aws_iam_policy_document" "ecs_assume_role_policy" {
 }
 
 data "aws_iam_policy_document" "task_execution_role_policy_doc" {
-  count                = "${var.enable == "true" ? 1 : 0}"
+  count = var.enable == "true" ? 1 : 0
   statement {
     actions = [
       "logs:CreateLogStream",
@@ -275,28 +275,28 @@ data "aws_iam_policy_document" "task_execution_role_policy_doc" {
       "ecr:BatchGetImage",
     ]
 
-    resources = "${var.ecr_repo_arns}"
+    resources = var.ecr_repo_arns
   }
 }
 
 resource "aws_iam_role" "task_role" {
-  count                = "${var.enable == "true" ? 1 : 0}"
+  count              = var.enable == "true" ? 1 : 0
   name               = "ecs-task-role-${var.name}-${var.environment}"
-  assume_role_policy = "${data.aws_iam_policy_document.ecs_assume_role_policy[0].json}"
+  assume_role_policy = data.aws_iam_policy_document.ecs_assume_role_policy[0].json
 }
 
 resource "aws_iam_role" "task_execution_role" {
-  count = "${var.ecs_use_fargate && var.enable == "true" ? 1 : 0}"
+  count = var.ecs_use_fargate && var.enable == "true" ? 1 : 0
 
   name               = "ecs-task-execution-role-${var.name}-${var.environment}"
-  assume_role_policy = "${data.aws_iam_policy_document.ecs_assume_role_policy[0].json}"
+  assume_role_policy = data.aws_iam_policy_document.ecs_assume_role_policy[0].json
 }
 
 resource "aws_iam_role_policy" "task_execution_role_policy" {
-  count = "${var.ecs_use_fargate && var.enable == "true" ? 1 : 0}"
+  count  = var.ecs_use_fargate && var.enable == "true" ? 1 : 0
   name   = "${aws_iam_role.task_execution_role[count.index].name}-policy"
-  role   = "${aws_iam_role.task_execution_role[count.index].name}"
-  policy = "${data.aws_iam_policy_document.task_execution_role_policy_doc[0].json}"
+  role   = aws_iam_role.task_execution_role[count.index].name
+  policy = data.aws_iam_policy_document.task_execution_role_policy_doc[0].json
 }
 
 #
@@ -308,39 +308,39 @@ data "aws_region" "current" {}
 # Create a task definition with a golang image so the ecs service can be easily
 # tested. We expect deployments will manage the future container definitions.
 resource "aws_ecs_task_definition" "main" {
-  count                = "${var.enable == "true" ? 1 : 0}"
+  count         = var.enable == "true" ? 1 : 0
   family        = "${var.name}-${var.environment}"
-  network_mode  = "${var.ecs_task_def_network_mode}"
-  task_role_arn = "${aws_iam_role.task_role[0].arn}"
+  network_mode  = var.ecs_task_def_network_mode
+  task_role_arn = aws_iam_role.task_role[0].arn
 
   # Fargate requirements
-  requires_compatibilities = "${compact(list(var.ecs_use_fargate ? "FARGATE" : ""))}"
-  cpu                      = "${var.ecs_use_fargate ? var.fargate_task_cpu : ""}"
-  memory                   = "${var.ecs_use_fargate ? var.fargate_task_memory : ""}"
-  execution_role_arn       = "${join("", aws_iam_role.task_execution_role.*.arn)}"
+  requires_compatibilities = compact(tolist(var.ecs_use_fargate ? ["FARGATE"] : ["EC2"]))
+  cpu                      = var.ecs_use_fargate ? var.fargate_task_cpu : ""
+  memory                   = var.ecs_use_fargate ? var.fargate_task_memory : ""
+  execution_role_arn       = join("", aws_iam_role.task_execution_role.*.arn)
 
-  container_definitions = "${var.container_definitions == "" ? local.default_container_definitions : var.container_definitions}"
+  container_definitions = var.container_definitions == "" ? local.default_container_definitions : var.container_definitions
 
   lifecycle {
     ignore_changes = [
-      "requires_compatibilities",
-      "cpu",
-      "memory",
-      "execution_role_arn",
-      "container_definitions",
+      requires_compatibilities,
+      cpu,
+      memory,
+      execution_role_arn,
+      container_definitions,
     ]
   }
 }
 
 # Create a data source to pull the latest active revision from
 data "aws_ecs_task_definition" "main" {
-  count                = "${var.enable == "true" ? 1 : 0}"
-  task_definition = "${aws_ecs_task_definition.main[0].family}"
-  depends_on      = ["aws_ecs_task_definition.main"]         # ensures at least one task def exists
+  count           = var.enable == "true" ? 1 : 0
+  task_definition = aws_ecs_task_definition.main[0].family
+  depends_on      = [aws_ecs_task_definition.main] # ensures at least one task def exists
 }
 
 locals {
-  ecs_service_launch_type = "${var.ecs_use_fargate ? "FARGATE" : "EC2"}"
+  ecs_service_launch_type = var.ecs_use_fargate ? "FARGATE" : "EC2"
 
   ecs_service_ordered_placement_strategy = {
     EC2 = [
@@ -368,25 +368,25 @@ locals {
 }
 
 resource "aws_ecs_service" "main" {
-  count                = "${var.enable == "true" ? 1 : 0}"
-  name    = "${var.name}"
-  cluster = "${var.ecs_cluster_arn}"
+  count   = var.enable == "true" ? 1 : 0
+  name    = var.name
+  cluster = var.ecs_cluster_arn
 
-  launch_type = "${local.ecs_service_launch_type}"
+  launch_type = local.ecs_service_launch_type
 
   # Use latest active revision
   task_definition = "${aws_ecs_task_definition.main[0].family}:${max(
     "${aws_ecs_task_definition.main[0].revision}",
-    "${data.aws_ecs_task_definition.main[0].revision}")}"
+  "${data.aws_ecs_task_definition.main[0].revision}")}"
 
-  desired_count                      = "${var.tasks_desired_count}"
-  deployment_minimum_healthy_percent = "${var.tasks_minimum_healthy_percent}"
-  deployment_maximum_percent         = "${var.tasks_maximum_percent}"
+  desired_count                      = var.tasks_desired_count
+  deployment_minimum_healthy_percent = var.tasks_minimum_healthy_percent
+  deployment_maximum_percent         = var.tasks_maximum_percent
 
   dynamic "ordered_placement_strategy" {
     for_each = local.ecs_service_ordered_placement_strategy[local.ecs_service_launch_type]
     content {
-      type = ordered_placement_strategy.value.type
+      type  = ordered_placement_strategy.value.type
       field = ordered_placement_strategy.value.field
     }
   }
@@ -398,33 +398,33 @@ resource "aws_ecs_service" "main" {
   }
 
   load_balancer {
-    target_group_arn = "${var.lb_target_group}"
-    container_name   = "${local.target_container_name}"
-    container_port   = "${var.container_port}"
+    target_group_arn = var.lb_target_group
+    container_name   = local.target_container_name
+    container_port   = var.container_port
   }
 
   lifecycle {
-    ignore_changes = ["task_definition"]
+    ignore_changes = [task_definition]
   }
 }
 
 # Application AutoScaling resources
 #
 resource "aws_appautoscaling_target" "main" {
-  count                = "${var.enable == "true" ? 1 : 0}"
+  count              = var.enable == "true" ? 1 : 0
   service_namespace  = "ecs"
   resource_id        = "service/${var.cluster_name}/${aws_ecs_service.main[0].name}"
   scalable_dimension = "ecs:service:DesiredCount"
-  min_capacity       = "${var.min_count}"
-  max_capacity       = "${var.max_count}"
+  min_capacity       = var.min_count
+  max_capacity       = var.max_count
 
   depends_on = [
-    "aws_ecs_service.main",
+    aws_ecs_service.main,
   ]
 }
 
 resource "aws_appautoscaling_policy" "up" {
-  count                = "${var.enable == "true" ? 1 : 0}"
+  count              = var.enable == "true" ? 1 : 0
   name               = "appScalingPolicy${var.environment}${var.name}ScaleUp"
   service_namespace  = "ecs"
   resource_id        = "service/${var.cluster_name}/${aws_ecs_service.main[0].name}"
@@ -432,7 +432,7 @@ resource "aws_appautoscaling_policy" "up" {
 
   step_scaling_policy_configuration {
     adjustment_type         = "ChangeInCapacity"
-    cooldown                = "${var.scale_up_cooldown_seconds}"
+    cooldown                = var.scale_up_cooldown_seconds
     metric_aggregation_type = "Average"
 
     step_adjustment {
@@ -442,12 +442,12 @@ resource "aws_appautoscaling_policy" "up" {
   }
 
   depends_on = [
-    "aws_appautoscaling_target.main",
+    aws_appautoscaling_target.main,
   ]
 }
 
 resource "aws_appautoscaling_policy" "down" {
-  count                = "${var.enable == "true" ? 1 : 0}"
+  count              = var.enable == "true" ? 1 : 0
   name               = "appScalingPolicy${var.environment}${var.name}ScaleDown"
   service_namespace  = "ecs"
   resource_id        = "service/${var.cluster_name}/${aws_ecs_service.main[0].name}"
@@ -455,7 +455,7 @@ resource "aws_appautoscaling_policy" "down" {
 
   step_scaling_policy_configuration {
     adjustment_type         = "ChangeInCapacity"
-    cooldown                = "${var.scale_down_cooldown_seconds}"
+    cooldown                = var.scale_down_cooldown_seconds
     metric_aggregation_type = "Average"
 
     step_adjustment {
@@ -465,6 +465,6 @@ resource "aws_appautoscaling_policy" "down" {
   }
 
   depends_on = [
-    "aws_appautoscaling_target.main",
+    aws_appautoscaling_target.main,
   ]
 }

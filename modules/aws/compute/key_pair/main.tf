@@ -4,13 +4,13 @@ locals {
 }
 
 resource "tls_private_key" "generated" {
-  count     = "${var.enable == "true" ? 1 : 0}"
+  count     = var.enable == "true" ? 1 : 0
   algorithm = "RSA"
 
 }
 
 resource "aws_key_pair" "generated" {
-  count      = "${var.enable == "true" ? 1 : 0}"
+  count      = var.enable == "true" ? 1 : 0
   key_name   = var.name
   public_key = tls_private_key.generated[0].public_key_openssh
 

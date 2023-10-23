@@ -2,7 +2,7 @@
 language: bash
 
 env:
-  - TERRAFORM_VERSION=0.12.3
+  - TERRAFORM_VERSION=1.5.4
 
 branches:
   only:
@@ -10,7 +10,7 @@ branches:
 
 install:
   # Install Terraform.
-  - curl -fSL "https://releases.hashicorp.com/terraform/0.12.3/terraform_0.12.3_linux_amd64.zip" -o terraform.zip
+  - curl -fSL "https://releases.hashicorp.com/terraform/1.5.4/terraform_1.5.4_linux_amd64.zip" -o terraform.zip
   - sudo unzip terraform.zip -d /opt/terraform
   - sudo ln -s /opt/terraform/terraform /usr/bin/terraform
   - rm -f terraform.zip
@@ -28,4 +28,4 @@ script:
      cd $dir/$folderpath && terraform validate -var-file=$foldername.variables.tfvar ../../deployment
     done
   - terraform -v
- 
+

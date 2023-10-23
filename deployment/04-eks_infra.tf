@@ -1,94 +1,91 @@
-module "eks_worker_key_pair" {
-  enable = "${var.eks_worker_key_pair}"
-  source = "../modules/aws/compute/key_pair"
-  name   = "${var.key_name}"
-  path   = "${path.root}/keys"
-}
+module "eks" {
+  count   = var.eks_cluster_create ? 1 : 0
+  source  = "terraform-aws-modules/eks/aws"
+  version = "19.16.0"
 
-module "eks_cluster" {
-  source          = "terraform-aws-modules/eks/aws"
-  version         = "5.0.0"
-  cluster_version = "${var.eks_cluster_version}"
-  cluster_name    = "${var.environment}-${var.eks_cluster_name}"
+  cluster_name    = "${var.eks_cluster_name}-eks-${var.environment}"
+  cluster_version = var.eks_cluster_version
 
-  vpc_id  = "${module.vpc.vpc_id_out}"
-  subnets = ["${module.private_subnet_1a.subnet_id_out}", "${module.private_subnet_1b.subnet_id_out}", "${module.public_subnet_1a.subnet_id_out}", "${module.public_subnet_1b.subnet_id_out}"]
+  cluster_endpoint_private_access = true
+  cluster_endpoint_public_access  = true
 
-  write_kubeconfig      = true
-  config_output_path    = "/.kube/"
-  manage_aws_auth       = true
-  write_aws_auth_config = true
-  map_users             = "${var.eks_cluster_map_users}"
+  # OpenID provider creation (IAM role for service accounts on EKS cluster)
+  # true if want to create it via terraform
+  enable_irsa                   = true
+  kms_key_enable_default_policy = true
 
-  worker_groups = [
+  cluster_addons = {
+    kube-proxy = {}
+    vpc-cni    = {}
+    coredns = {
+      addon_version = "v1.10.1-eksbuild.2"
+      configuration_values = jsonencode({
+        computeType = "fargate"
+      })
+    }
+  }
+
+  vpc_id     = module.vpc.vpc_id_out
+  subnet_ids = [module.private_subnet_1a.subnet_id_out, module.private_subnet_1b.subnet_id_out]
+
+  # Fargate profiles use the cluster primary security group so these are not utilized
+  create_cluster_security_group = false
+  create_node_security_group    = false
+
+  fargate_profile_defaults = {
+    iam_role_additional_policies = {
+      additional = aws_iam_policy.additional.arn
+    }
+  }
+
+  fargate_profiles = merge(
     {
-      name                 = "eks_workers"
-      instance_type        = "${var.instance_type}"
-      asg_min_size         = "${var.asg_min_size}"
-      asg_desired_capacity = "${var.asg_desired_capacity}"
-      asg_max_size         = "${var.asg_max_size}"
-      root_volume_size     = "${var.root_volume_size}"
-      root_volume_type     = "${var.root_volume_type}"
-      ami_id               = "${var.ami_id}"
-      ebs_optimized        = false
-      key_name             = "${var.key_name}"
-      enable_monitoring    = false
-      subnets              = ["${module.private_subnet_1a.subnet_id_out}", "${module.private_subnet_1b.subnet_id_out}"]
+      devops-eks-profile = {
+        name = "devops-eks"
+        selectors = [
+          {
+            namespace = "app-*"
+            labels = {
+              Application = "app-*"
+            }
+          }
+        ]
+
+        subnet_ids = [module.private_subnet_1a.subnet_id_out, module.private_subnet_1b.subnet_id_out]
+        tags       = local.tags
+        timeouts = {
+          create = "20m"
+          delete = "20m"
+        }
+      }
     },
-  ]
-
-  tags = {
-    Cluster     = "k8s"
-    Name        = "${var.eks_cluster_name}"
-    Environment = "${var.environment}"
-    Created_By  = "${var.created_by}"
-  }
+    { for i in range(3) :
+      "kube-system-${element(split("-", local.azs[i]), 2)}" => {
+        selectors = [
+          { namespace = "kube-system" }
+        ]
+        # Create a profile per AZ for high availability
+        subnet_ids = [element([module.private_subnet_1a.subnet_id_out, module.private_subnet_1b.subnet_id_out], i)]
+      }
+    }
+  )
+  cluster_tags = { "alpha.eksctl.io/cluster-oidc-enabled" = "true" }
+  tags         = local.tags
 }
 
-resource "aws_s3_bucket" "eks_cluster_config" {
-  bucket = "${var.environment}-eks-cluster-config"
-  acl    = "private"
+resource "aws_iam_policy" "additional" {
+  name = "eks-additional-${var.environment}"
 
-  versioning {
-    enabled = true
-  }
-
-  tags = {
-    Name        = "${var.environment}-eks-cluster-config"
-    Environment = "${var.environment}"
-    Created_By  = "${var.created_by}"
-    depend_on   = "${module.eks_cluster.cluster_id}"
-  }
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ec2:Describe*",
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+    ]
+  })
 }
-
-resource "aws_s3_bucket_object" "eks_config_files" {
-  bucket     = "${var.environment}-eks-cluster-config"
-  key        = "kubeconfig_${var.environment}-${var.eks_cluster_name}"
-  source     = "/.kube/kubeconfig_${var.environment}-${var.eks_cluster_name}"
-  depends_on = [aws_s3_bucket.eks_cluster_config]
-}
-
-resource "aws_s3_bucket_object" "eks_auth_files" {
-  bucket     = "${var.environment}-eks-cluster-config"
-  key        = "config-map-aws-auth_${var.environment}-${var.eks_cluster_name}.yaml"
-  source     = "/.kube/config-map-aws-auth_${var.environment}-${var.eks_cluster_name}.yaml"
-  depends_on = [aws_s3_bucket.eks_cluster_config]
-}
-
-#====Configuring the kubectl and registering the nodes with EKS cluster===
-#resource "null_resource" "configure-kubectl" {
-#  depends_on = [module.eks_cluster.cluster_id]
-#  provisioner "local-exec" {
-#    command = "export KUBECONFIG=$KUBECONFIG:/.kube/kubeconfig_${var.environment}-${var.eks_cluster_name}"
-#    #interpreter = ["/bin/bash", "-c"]
-#  }
-#}
-
-
-#resource "null_resource" "register-nodes" {
-#  depends_on = [null_resource.configure-kubectl]
-#  provisioner "local-exec" {
-#    command = "kubectl apply -f /.kube/config-map-aws-auth_${var.environment}-${var.eks_cluster_name}.yaml"
-#    interpreter = ["/bin/bash", "-c"]
-#  }
-#}

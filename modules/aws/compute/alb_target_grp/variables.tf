@@ -1,21 +1,21 @@
-variable enable {
+variable "enable" {
   default = "true"
 }
 
-variable target_group_name {}
+variable "target_group_name" {}
 
-variable port {
+variable "port" {
   default = "80"
 }
 
-variable protocol {
+variable "protocol" {
   default = "HTTP"
 }
 
-variable vpc_id {}
-variable environment {}
-variable description {}
+variable "vpc_id" {}
+variable "environment" {}
+variable "description" {}
 
-variable deregistration_delay {
+variable "deregistration_delay" {
   default = "300"
 }

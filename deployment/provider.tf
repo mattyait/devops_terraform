@@ -1,12 +1,20 @@
-provider "aws" {
-  region                  = "${var.aws_region}"
-  shared_credentials_file = "/root/.aws/credentials"
-  profile                 = "${var.aws_profile}"
-  version                 = ">= 2.19.0"
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "5.11.0"
+    }
+  }
+  required_version = ">= 1.1"
 }
 
+provider "aws" {
+  region = var.aws_region
+}
+
+
 resource "aws_dynamodb_table" "dynamodb-terraform-state-lock" {
-  name           = "${var.dynamo_db_lock}"
+  name           = var.dynamo_db_lock
   hash_key       = "LockID"
   read_capacity  = 20
   write_capacity = 20

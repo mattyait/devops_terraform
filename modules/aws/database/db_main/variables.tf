@@ -1,6 +1,6 @@
 variable "enable" {
   description = "Toggle on/off flag for infra part"
-  default = "true"
+  default     = "true"
 }
 variable "identifier" {
   description = "The name of the RDS instance, if omitted, Terraform will assign a random, unique identifier"

@@ -1,9 +1,9 @@
-variable vpc_id { }
-variable tags {
+variable "vpc_id" {}
+variable "tags" {
   description = "A map of tags to add to all resources"
-  type        = map
+  type        = map(any)
   default     = {}
 }
-variable enable {
+variable "enable" {
   default = "true"
 }
