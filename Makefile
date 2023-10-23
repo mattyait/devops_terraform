@@ -40,7 +40,6 @@ validate: envset
 plan: envset check
 	$(TF_CMD) terraform -chdir=${terraform_folderpath} workspace select $(TF_WS) || $(TF_CMD) terraform -chdir=${terraform_folderpath} workspace new $(TF_WS)
 	$(TF_CMD) terraform -chdir=${terraform_folderpath} plan -out=$(TF_WS).tfplan -var-file=../${environment_folderpath}/variables.tfvars
-	$(TF_CMD) terraform -chdir=${terraform_folderpath} show -json $(TF_WS).tfplan | jq -er . > $(TF_WS).tfplan.json
 
 apply: envset check
 	$(TF_CMD) terraform -chdir=${terraform_folderpath} workspace select $(TF_WS) || $(TF_CMD) terraform -chdir=${terraform_folderpath} workspace new $(TF_WS)
