@@ -44,3 +44,7 @@ plan: envset check
 apply: envset check
 	$(TF_CMD) terraform -chdir=${terraform_folderpath} workspace select $(TF_WS) || $(TF_CMD) terraform -chdir=${terraform_folderpath} workspace new $(TF_WS)
 	$(TF_CMD) terraform -chdir=${terraform_folderpath} apply -var-file=../${environment_folderpath}/variables.tfvars $(TF_AUTOAPPROVE)
+
+destroy: envset check
+	$(TF_CMD) terraform -chdir=${terraform_folderpath} workspace select $(TF_WS) || $(TF_CMD) terraform -chdir=${terraform_folderpath} workspace new $(TF_WS)
+	$(TF_CMD) terraform -chdir=${terraform_folderpath} destroy -var-file=../${environment_folderpath}/variables.tfvars $(TF_AUTOAPPROVE)
